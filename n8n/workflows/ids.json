@@ -1,0 +1,11 @@
+{
+  "sheet_id": "",
+  "chat_id": "",
+  "gemini_model": "models/gemini-2.5-flash",
+  "nim_model": "meta/llama-3.3-70b-instruct",
+  "process": "",
+  "job": "",
+  "find_link": "",
+  "bot": "",
+  "retry": ""
+}

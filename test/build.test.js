@@ -59,3 +59,8 @@ test('all libs inline together into one valid Code node body', () => {
   const code = JSON.parse(build("__INCLUDE__('lib/input.js', 'lib/reply.js', 'lib/sheet.js', 'lib/resources.js')", src, {}));
   assert.doesNotThrow(() => new Function('$input', '$', code + '\nconst job = 1; const text = 2; return [];'));
 });
+
+test('comment-only lines are dropped from included code', () => {
+  const dir = tempSrc({ 'a.js': '// header\n/**\n * Doc.\n * @param {string} x\n */\nfunction x(){} // keep inline\n/** one line */\nconst y = 1;\n' });
+  assert.strictEqual(build("__INCLUDE__('a.js')", dir), JSON.stringify('function x(){} // keep inline\nconst y = 1;'));
+});

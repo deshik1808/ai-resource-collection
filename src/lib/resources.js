@@ -98,4 +98,21 @@ function matchSkill(results, name) {
   return best && { name: best.name, url: best.url };
 }
 
-module.exports = { parseResources, pickIndex, matchSkill };
+/** Text of an AI answer: Gemini node output or an OpenAI-style (NVIDIA NIM) response. */
+function aiText(json) {
+  const parts = json?.content?.parts;
+  if (Array.isArray(parts)) return parts.map((p) => p.text || '').join('');
+  return json?.choices?.[0]?.message?.content || '';
+}
+
+const TEMPORARY = /unavailable|overloaded|too many requests|rate limit|quota|exhausted|timed? ?out|try again later/i;
+
+/** True for errors worth retrying later (quota, overload, server errors), false for a bad request. */
+function isTemporaryError(error) {
+  if (!error) return false;
+  const message = typeof error === 'string' ? error : `${error.message || ''} ${error.description || ''}`;
+  const code = typeof error === 'object' ? String(error.httpCode || '') : '';
+  return code === '429' || /^5\d\d$/.test(code) || TEMPORARY.test(message);
+}
+
+module.exports = { parseResources, pickIndex, matchSkill, aiText, isTemporaryError };

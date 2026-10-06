@@ -1,0 +1,14 @@
+Below is the text of a web page that someone saved as an AI resource. Describe the ONE resource this page is about (the tool, skill, prompt collection or website itself).
+
+Reply with JSON only, no other text, in exactly this shape:
+{"resources":[{"name":"","category":"Tool","description":"","link_in_source":"","prompt_text":""}]}
+
+Rules:
+- name: the resource's own name as its creator writes it.
+- category: exactly one of Skill, Tool, Prompt, Website. Skill = an agent/Claude skill, plugin or skill pack. Tool = an app, product, model, library or service. Prompt = a single reusable prompt. Website = a site that is itself the resource (a directory, a blog, a course).
+- description: English. One or two short sentences: what it is and what it is for. At most 200 characters.
+- link_in_source: always "" (the saved link is used).
+- prompt_text: the full prompt only if the page is a single prompt, otherwise "".
+- If the page text is empty, an error page or a login wall, reply {"resources":[]}.
+
+Page text:

@@ -1,0 +1,5 @@
+Pick the official page for the AI resource below from the numbered search results.
+
+Answer with the number of the result only, for example 2. Answer none if no result is clearly the official page, the GitHub repository, or the skills.sh page of exactly this resource. Do not answer with a URL or any other text.
+
+Resource:

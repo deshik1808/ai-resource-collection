@@ -34,3 +34,12 @@ test('throws on missing include', () => {
   const dir = tempSrc({});
   assert.throws(() => build("__INCLUDE__('nope.js')", dir), { message: 'include not found: nope.js' });
 });
+
+test('a __TEXT__ inside an included file is inlined before the file itself', () => {
+  const dir = tempSrc({
+    'a.js': "const PROMPT = __TEXT__('prompts/p.txt')\nmodule.exports = { PROMPT }\n",
+    'prompts/p.txt': 'Say "hi".\n',
+  });
+  const out = build("jsCode: __INCLUDE__('a.js')", dir);
+  assert.strictEqual(out, 'jsCode: ' + JSON.stringify('const PROMPT = ' + JSON.stringify('Say "hi".\n')));
+});

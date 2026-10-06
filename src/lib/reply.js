@@ -63,4 +63,13 @@ function formatFind(query, result) {
   return lines.join('\n');
 }
 
-module.exports = { ICONS, formatSummary, findRows, formatFind };
+/** Reply line for an input that was held instead of saved. */
+function holdNotice({ status, kind, empty }) {
+  if (empty) return 'Nothing found in this one';
+  if (status === 'pending') return '⏸ Saved for later, will retry';
+  return kind === 'youtube'
+    ? "⚠️ Couldn't watch this, saved to check manually"
+    : "⚠️ Couldn't read this, saved to check manually";
+}
+
+module.exports = { ICONS, formatSummary, findRows, formatFind, holdNotice };

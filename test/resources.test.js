@@ -99,3 +99,24 @@ test('matchSkill: a partial word is not a match', () => {
 test('matchSkill: no results', () => {
   assert.strictEqual(matchSkill([], 'superpowers'), null);
 });
+
+const { aiText, isTemporaryError } = require('../src/lib/resources');
+
+test('aiText: reads Gemini and NVIDIA NIM (OpenAI-style) answers', () => {
+  assert.strictEqual(aiText({ content: { parts: [{ text: 'a' }, { text: 'b' }] } }), 'ab');
+  assert.strictEqual(aiText({ choices: [{ message: { content: '{"resources":[]}' } }] }), '{"resources":[]}');
+  assert.strictEqual(aiText({}), '');
+});
+
+test('isTemporaryError: quota, overload and server errors are temporary', () => {
+  assert.strictEqual(isTemporaryError('Service unavailable - try again later or consider setting this node to retry automatically (in the node settings)'), true);
+  assert.strictEqual(isTemporaryError({ message: 'The service is receiving too many requests from you', httpCode: '429' }), true);
+  assert.strictEqual(isTemporaryError({ message: 'Resource has been exhausted (e.g. check quota).' }), true);
+  assert.strictEqual(isTemporaryError({ message: 'Bad gateway', httpCode: '502' }), true);
+});
+
+test('isTemporaryError: a bad or private video is permanent', () => {
+  assert.strictEqual(isTemporaryError({ message: 'Bad request - please check your parameters', httpCode: '400' }), false);
+  assert.strictEqual(isTemporaryError({ message: 'The caller does not have permission', httpCode: '403' }), false);
+  assert.strictEqual(isTemporaryError(undefined), false);
+});

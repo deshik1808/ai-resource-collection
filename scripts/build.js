@@ -28,14 +28,17 @@ function stripModuleLines(code) {
     .trim();
 }
 
+function inlineText(code, srcDir) {
+  return code.replace(TEXT, (_, file) => JSON.stringify(readSrc(srcDir, file)));
+}
+
 function build(source, srcDir) {
-  return source
-    .replace(INCLUDE, (_, args) => {
-      const files = [...args.matchAll(/'([^']+)'/g)].map((m) => m[1]);
-      const code = files.map((f) => stripModuleLines(readSrc(srcDir, f))).join('\n');
-      return JSON.stringify(code);
-    })
-    .replace(TEXT, (_, file) => JSON.stringify(readSrc(srcDir, file)));
+  const withIncludes = source.replace(INCLUDE, (_, args) => {
+    const files = [...args.matchAll(/'([^']+)'/g)].map((m) => m[1]);
+    const code = files.map((f) => stripModuleLines(inlineText(readSrc(srcDir, f), srcDir))).join('\n');
+    return JSON.stringify(code);
+  });
+  return inlineText(withIncludes, srcDir);
 }
 
 function main() {

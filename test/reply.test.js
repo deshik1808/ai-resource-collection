@@ -94,3 +94,12 @@ test('formatFind: lines with links or prompt preview, plus the more line', () =>
 test('formatFind: no match', () => {
   assert.strictEqual(formatFind('zzz', { rows: [], more: 0 }), 'Nothing for "zzz".');
 });
+
+const { holdNotice } = require('../src/lib/reply');
+
+test('holdNotice: one message per hold reason', () => {
+  assert.strictEqual(holdNotice({ status: 'pending', kind: 'youtube', empty: false }), '⏸ Saved for later, will retry');
+  assert.strictEqual(holdNotice({ status: 'check', kind: 'youtube', empty: false }), "⚠️ Couldn't watch this, saved to check manually");
+  assert.strictEqual(holdNotice({ status: 'check', kind: 'page', empty: false }), "⚠️ Couldn't read this, saved to check manually");
+  assert.strictEqual(holdNotice({ status: 'check', kind: 'youtube', empty: true }), 'Nothing found in this one');
+});

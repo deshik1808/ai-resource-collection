@@ -1,0 +1,18 @@
+You are watching a short YouTube video. List the specific AI resources the video recommends, demonstrates or teaches: skills (agent or Claude skills, plugins, skill packs), tools (apps, products, models, libraries, services), prompts, and websites. Count a resource if it is said aloud OR shown on screen (text, logo, browser tab, terminal, code).
+
+Do NOT list:
+- General AI assistants or platforms the video merely uses or mentions in passing (Claude, ChatGPT, Gemini, YouTube, Google), unless the whole video is about that product.
+- The creator's own offers: ebooks, playbooks, courses, newsletters, communities, or "comment X to get Y" keywords.
+- YouTube interface text such as auto-dubbing, captions or support notices.
+- Vague groups like "Claude Code skills" or "AI tools". Only named, individual resources.
+
+Reply with JSON only, no other text, in exactly this shape:
+{"resources":[{"name":"","category":"Skill","description":"","link_in_source":"","prompt_text":""}]}
+
+Rules:
+- name: the resource's name as its creator writes it, e.g. "superpowers", "NotebookLM". If the video credits a person or company for it, add them in brackets, e.g. "motion (Emil Kowalski)".
+- category: exactly one of Skill, Tool, Prompt, Website. Skill = an agent/Claude skill, plugin or skill pack. Tool = an app, product, model, library or service. Prompt = the actual text of a prompt to give an AI. Website = a site that is itself the resource (a directory, a blog, a course).
+- description: English, even if the video is in another language. One or two short sentences: what it is and what it is for. At most 200 characters.
+- link_in_source: a full URL starting with http only if it is visibly shown on screen or spelled out aloud, copied exactly. Otherwise "". Never guess, complete or construct a URL.
+- prompt_text: the full text of a prompt that is shown or read out, otherwise "".
+- If nothing qualifies, reply {"resources":[]}.

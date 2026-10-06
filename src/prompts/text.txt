@@ -1,0 +1,12 @@
+Someone typed the message below into their AI resource basket. It is either (a) the names of one or more AI resources to look up, e.g. "superpowers skill" or "try NotebookLM and Gamma", or (b) a prompt they want to keep.
+
+Reply with JSON only, no other text, in exactly this shape:
+{"resources":[{"name":"","category":"Tool","description":"","link_in_source":"","prompt_text":""}]}
+
+Rules:
+- If it is (a): one item per resource named. name = the resource's name. category = exactly one of Skill, Tool, Prompt, Website. description = English, one short sentence on what it is and what it is for, only if you are confident; otherwise "". prompt_text = "".
+- If it is (b): one item. category = "Prompt". name = a short title of at most 6 words. description = English, one sentence on what the prompt does. prompt_text = the message exactly as written, unchanged.
+- link_in_source: a URL only if one is written in the message, copied exactly. Otherwise "". Never guess or construct a URL.
+- If it is neither, reply {"resources":[]}.
+
+Message:

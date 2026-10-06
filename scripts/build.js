@@ -12,6 +12,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const MODULE_LINE = /^(const .* = require\(|module\.exports)/;
+const COMMENT_LINE = /^\s*(\/\/|\/\*\*|\*\/|\* |\*$)/;
 const INCLUDE = /__INCLUDE__\(([^)]*)\)/g;
 const TEXT = /__TEXT__\(\s*'([^']+)'\s*\)/g;
 const ID = /__ID__\(\s*'([^']+)'\s*\)/g;
@@ -25,7 +26,7 @@ function readSrc(srcDir, file) {
 function stripModuleLines(code) {
   return code
     .split('\n')
-    .filter((line) => !MODULE_LINE.test(line))
+    .filter((line) => !MODULE_LINE.test(line) && !COMMENT_LINE.test(line))
     .join('\n')
     .trim();
 }

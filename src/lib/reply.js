@@ -72,4 +72,9 @@ function holdNotice({ status, kind, empty }) {
     : "⚠️ Couldn't read this, saved to check manually";
 }
 
-module.exports = { ICONS, formatSummary, findRows, formatFind, holdNotice };
+/** Word used in the reply header for each kind of input. */
+function labelFor(kind) {
+  return { youtube: 'Short', page: 'link' }[kind] || 'message';
+}
+
+module.exports = { ICONS, formatSummary, findRows, formatFind, holdNotice, labelFor };

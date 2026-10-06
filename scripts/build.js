@@ -3,6 +3,7 @@
 //
 //   __INCLUDE__('lib/a.js', 'adapters/x.js')  -> JSON string of the files joined
 //   __TEXT__('prompts/youtube.txt')           -> JSON string of the file as-is
+//   __ID__('sheet_id')                        -> JSON string from n8n/workflows/ids.json
 //
 // Included .js files lose their `const … = require(…)` and `module.exports`
 // lines, because n8n Code nodes cannot load local modules.
@@ -13,6 +14,7 @@ const path = require('node:path');
 const MODULE_LINE = /^(const .* = require\(|module\.exports)/;
 const INCLUDE = /__INCLUDE__\(([^)]*)\)/g;
 const TEXT = /__TEXT__\(\s*'([^']+)'\s*\)/g;
+const ID = /__ID__\(\s*'([^']+)'\s*\)/g;
 
 function readSrc(srcDir, file) {
   const full = path.join(srcDir, file);
@@ -28,17 +30,22 @@ function stripModuleLines(code) {
     .trim();
 }
 
-function inlineText(code, srcDir) {
-  return code.replace(TEXT, (_, file) => JSON.stringify(readSrc(srcDir, file)));
+function inlineValues(code, srcDir, ids) {
+  return code
+    .replace(TEXT, (_, file) => JSON.stringify(readSrc(srcDir, file)))
+    .replace(ID, (_, key) => {
+      if (!(key in ids)) throw new Error(`unknown id: ${key}`);
+      return JSON.stringify(ids[key] ?? '');
+    });
 }
 
-function build(source, srcDir) {
+function build(source, srcDir, ids = {}) {
   const withIncludes = source.replace(INCLUDE, (_, args) => {
     const files = [...args.matchAll(/'([^']+)'/g)].map((m) => m[1]);
-    const code = files.map((f) => stripModuleLines(inlineText(readSrc(srcDir, f), srcDir))).join('\n');
+    const code = files.map((f) => stripModuleLines(inlineValues(readSrc(srcDir, f), srcDir, ids))).join('\n');
     return JSON.stringify(code);
   });
-  return inlineText(withIncludes, srcDir);
+  return inlineValues(withIncludes, srcDir, ids);
 }
 
 function main() {
@@ -49,9 +56,11 @@ function main() {
   const sources = fs.existsSync(workflowsDir)
     ? fs.readdirSync(workflowsDir).filter((f) => f.endsWith('.workflow.js'))
     : [];
+  const idsFile = path.join(workflowsDir, 'ids.json');
+  const ids = fs.existsSync(idsFile) ? JSON.parse(fs.readFileSync(idsFile, 'utf8')) : {};
   for (const file of sources) {
     const source = fs.readFileSync(path.join(workflowsDir, file), 'utf8');
-    fs.writeFileSync(path.join(outDir, file), build(source, path.join(root, 'src')));
+    fs.writeFileSync(path.join(outDir, file), build(source, path.join(root, 'src'), ids));
     console.log(`built build/${file}`);
   }
   if (sources.length === 0) console.log('no workflow sources found');

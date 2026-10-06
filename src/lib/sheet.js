@@ -74,7 +74,7 @@ function sourceStatus(sourceUrl, rows) {
   );
 }
 
-function job(input, kind, sourceUrl, note, replaceRow) {
+function makeJob(input, kind, sourceUrl, note, replaceRow) {
   return {
     chat_id: input.chat_id,
     kind,
@@ -92,10 +92,10 @@ function planJobs(input, rows) {
 
   if (input.retry_row != null) {
     const url = urls[0];
-    return { jobs: [job(input, url ? kindOf(url) : 'text', url || '', note, null)], notices: [] };
+    return { jobs: [makeJob(input, url ? kindOf(url) : 'text', url || '', note, null)], notices: [] };
   }
   if (urls.length === 0) {
-    return { jobs: [job(input, 'text', '', '', null)], notices: [] };
+    return { jobs: [makeJob(input, 'text', '', '', null)], notices: [] };
   }
 
   const jobs = [];
@@ -107,7 +107,7 @@ function planJobs(input, rows) {
     } else if (existing && existing.status === 'pending') {
       notices.push('Already queued, will retry');
     } else {
-      jobs.push(job(input, kindOf(url), url, note, existing ? existing.row_number : null));
+      jobs.push(makeJob(input, kindOf(url), url, note, existing ? existing.row_number : null));
     }
   }
   return { jobs, notices };

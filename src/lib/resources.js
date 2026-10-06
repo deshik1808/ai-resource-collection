@@ -18,7 +18,7 @@ function normaliseCategory(value) {
   return CATEGORIES.find((c) => c.toLowerCase() === wanted) || 'Website';
 }
 
-function text(value) {
+function trimmed(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
@@ -38,13 +38,13 @@ function parseResources(raw) {
   if (!data || !Array.isArray(data.resources)) return { ok: false, error: 'missing resources array' };
 
   const resources = data.resources
-    .filter((item) => item && text(item.name))
+    .filter((item) => item && trimmed(item.name))
     .map((item) => ({
-      name: text(item.name),
+      name: trimmed(item.name),
       category: normaliseCategory(item.category),
-      description: text(item.description).slice(0, DESCRIPTION_MAX),
-      link_in_source: isHttpUrl(text(item.link_in_source)) ? text(item.link_in_source) : '',
-      prompt_text: text(item.prompt_text),
+      description: trimmed(item.description).slice(0, DESCRIPTION_MAX),
+      link_in_source: isHttpUrl(trimmed(item.link_in_source)) ? trimmed(item.link_in_source) : '',
+      prompt_text: trimmed(item.prompt_text),
     }));
   return { ok: true, resources };
 }

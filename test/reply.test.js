@@ -103,3 +103,11 @@ test('holdNotice: one message per hold reason', () => {
   assert.strictEqual(holdNotice({ status: 'check', kind: 'page', empty: false }), "⚠️ Couldn't read this, saved to check manually");
   assert.strictEqual(holdNotice({ status: 'check', kind: 'youtube', empty: true }), 'Nothing found in this one');
 });
+
+const { labelFor } = require('../src/lib/reply');
+
+test('labelFor: reply wording per input kind', () => {
+  assert.strictEqual(labelFor('youtube'), 'Short');
+  assert.strictEqual(labelFor('page'), 'link');
+  assert.strictEqual(labelFor('text'), 'message');
+});

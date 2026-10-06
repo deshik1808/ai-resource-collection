@@ -1,0 +1,12 @@
+{
+  "content": {
+    "parts": [
+      {
+        "text": "```json\n{\n  \"resources\": [\n    {\n      \"name\": \"Taste skill\",\n      \"category\": \"Skill\",\n      \"description\": \"Gives Claude an aesthetic opinion for designs.\",\n      \"link_in_source\": \"\",\n      \"prompt_text\": \"\"\n    },\n    {\n      \"name\": \"motion (Emil Kowalski)\",\n      \"category\": \"Skill\",\n      \"description\": \"Makes AI-designed interfaces feel alive with motion.\",\n      \"link_in_source\": \"\",\n      \"prompt_text\": \"\"\n    },\n    {\n      \"name\": \"Impeccable\",\n      \"category\": \"Skill\",\n      \"description\": \"Tightens every loose detail in AI-designed interfaces before shipping.\",\n      \"link_in_source\": \"\",\n      \"prompt_text\": \"\"\n    }\n  ]\n}\n```"
+      }
+    ],
+    "role": "model"
+  },
+  "finishReason": "STOP",
+  "index": 0
+}

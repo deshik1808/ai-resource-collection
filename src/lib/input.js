@@ -74,4 +74,23 @@ function messageText(message) {
   return full === '' ? null : full;
 }
 
-module.exports = { messageText, splitInput, normalizeUrl, isYouTube };
+const ENTITIES = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp;': ' ' };
+
+/** @param {string} html @param {number} max @returns {string} readable text of a web page */
+function pageText(html, max) {
+  return String(html || '')
+    .replace(/<(script|style|noscript)[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&(amp|lt|gt|quot|#39|nbsp);/g, (entity) => ENTITIES[entity])
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, max);
+}
+
+/** @param {string} raw @returns {string} host without www, or '' */
+function domainOf(raw) {
+  const url = parseUrl(raw);
+  return url ? url.hostname.toLowerCase().replace(/^www\./, '') : '';
+}
+
+module.exports = { messageText, splitInput, normalizeUrl, isYouTube, pageText, domainOf };

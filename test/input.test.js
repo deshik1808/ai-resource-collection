@@ -68,3 +68,20 @@ test('messageText: caption plus hidden text_link URL', () => {
 test('messageText: message with no text is null', () => {
   assert.strictEqual(messageText({ photo: [{}] }), null);
 });
+
+const { pageText, domainOf } = require('../src/lib/input');
+
+test('pageText: drops scripts, styles and tags, decodes common entities, collapses space', () => {
+  const html = '<html><head><title>Superpowers</title><style>p{color:red}</style><script>alert(1)</script></head>' +
+    '<body><h1>Superpowers</h1>\n<p>Skills &amp; workflows for <b>Claude</b>&nbsp;Code</p></body></html>';
+  assert.strictEqual(pageText(html, 8000), 'Superpowers Superpowers Skills & workflows for Claude Code');
+});
+
+test('pageText: cuts to the limit', () => {
+  assert.strictEqual(pageText('<p>' + 'a'.repeat(9000) + '</p>', 8000).length, 8000);
+});
+
+test('domainOf: host without www', () => {
+  assert.strictEqual(domainOf('https://www.github.com/obra/superpowers'), 'github.com');
+  assert.strictEqual(domainOf('not a url'), '');
+});

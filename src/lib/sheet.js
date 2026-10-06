@@ -2,6 +2,7 @@
 // deciding what to process, and retry bookkeeping.
 
 const { splitInput, normalizeUrl, isYouTube } = require('./input');
+const { holdNotice } = require('./reply');
 
 const MAX_ATTEMPTS = 3;
 
@@ -117,4 +118,34 @@ function nextRetryState(row) {
   return { status: attempts >= MAX_ATTEMPTS ? 'check' : 'pending', attempts };
 }
 
-module.exports = { toRow, holdRow, findDuplicate, planJobs, nextRetryState };
+/**
+ * How to record an input that could not be saved. Only Gemini problems are
+ * temporary (pending, retried later); everything else goes to `check`.
+ * @param {Job} job @param {{temporary: boolean, empty: boolean, name?: string}} reason
+ * @returns {{op: 'append', row: Row, notice: string} | {op: 'update', update: object, notice: string} | {op: 'none', notice: string}}
+ */
+function holdPlan(job, reason, rows, now) {
+  const status = reason.temporary && job.kind === 'youtube' ? 'pending' : 'check';
+  const notice = holdNotice({ status, kind: job.kind, empty: reason.empty });
+
+  if (job.retry_row != null) {
+    const existing = rows.find((row) => Number(row.row_number) === Number(job.retry_row)) || {};
+    const next = status === 'pending'
+      ? nextRetryState(existing)
+      : { status: 'check', attempts: (Number(existing.attempts) || 0) + 1 };
+    const quietNotice = next.status === 'pending' ? '' : holdNotice({ status: 'check', kind: job.kind, empty: reason.empty });
+    return { op: 'update', update: { row_number: Number(job.retry_row), ...next }, notice: quietNotice };
+  }
+  if (job.replace_row != null) return { op: 'none', notice };
+
+  const row = holdRow({
+    source_url: job.source_url,
+    note: job.kind === 'text' ? job.text : job.note,
+    status,
+    now,
+    name: reason.name,
+  });
+  return { op: 'append', row, notice };
+}
+
+module.exports = { toRow, holdRow, findDuplicate, planJobs, nextRetryState, holdPlan };

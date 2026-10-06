@@ -115,4 +115,25 @@ function isTemporaryError(error) {
   return code === '429' || /^5\d\d$/.test(code) || TEMPORARY.test(message);
 }
 
-module.exports = { parseResources, pickIndex, matchSkill, aiText, isTemporaryError };
+/** Body for an NVIDIA NIM (OpenAI-compatible) chat completion. */
+function nimRequest(model, prompt, content) {
+  return {
+    model,
+    messages: [{ role: 'user', content: `${prompt}\n${content}` }],
+    temperature: 0.2,
+    max_tokens: 4096,
+  };
+}
+
+/** What a reader's answer means for this job: resources to save, or a reason to hold it. */
+function readerOutcome(job, raw) {
+  const parsed = parseResources(raw);
+  if (!parsed.ok) return { hold: { temporary: false, empty: false } };
+  if (parsed.resources.length === 0) return { hold: { temporary: false, empty: true } };
+  if (job.kind === 'page') {
+    return { resources: [{ ...parsed.resources[0], link_in_source: job.source_url }] };
+  }
+  return { resources: parsed.resources };
+}
+
+module.exports = { parseResources, pickIndex, matchSkill, aiText, isTemporaryError, nimRequest, readerOutcome };

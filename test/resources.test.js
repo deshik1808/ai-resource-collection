@@ -120,3 +120,34 @@ test('isTemporaryError: a bad or private video is permanent', () => {
   assert.strictEqual(isTemporaryError({ message: 'The caller does not have permission', httpCode: '403' }), false);
   assert.strictEqual(isTemporaryError(undefined), false);
 });
+
+const { nimRequest, readerOutcome } = require('../src/lib/resources');
+
+test('nimRequest: OpenAI-style chat body with prompt and content', () => {
+  assert.deepStrictEqual(nimRequest('meta/llama-3.3-70b-instruct', 'PROMPT', 'CONTENT'), {
+    model: 'meta/llama-3.3-70b-instruct',
+    messages: [{ role: 'user', content: 'PROMPT\nCONTENT' }],
+    temperature: 0.2,
+    max_tokens: 4096,
+  });
+});
+
+const job = (fields) => ({ chat_id: '1', kind: 'youtube', source_url: 'https://www.youtube.com/watch?v=a', note: '', text: '', retry_row: null, replace_row: null, ...fields });
+
+test('readerOutcome: resources from a good answer', () => {
+  const out = readerOutcome(job({}), '{"resources":[{"name":"A","category":"Skill"}]}');
+  assert.deepStrictEqual(out.resources.map((r) => r.name), ['A']);
+  assert.strictEqual(out.hold, undefined);
+});
+
+test('readerOutcome: a page job keeps one resource and links the shared URL', () => {
+  const out = readerOutcome(job({ kind: 'page', source_url: 'https://github.com/obra/superpowers' }),
+    '{"resources":[{"name":"superpowers","category":"Skill","link_in_source":""},{"name":"extra","category":"Tool"}]}');
+  assert.strictEqual(out.resources.length, 1);
+  assert.strictEqual(out.resources[0].link_in_source, 'https://github.com/obra/superpowers');
+});
+
+test('readerOutcome: broken answer holds for checking; empty answer holds as empty', () => {
+  assert.deepStrictEqual(readerOutcome(job({}), '{"resources":[{"na').hold, { temporary: false, empty: false });
+  assert.deepStrictEqual(readerOutcome(job({}), '{"resources":[]}').hold, { temporary: false, empty: true });
+});

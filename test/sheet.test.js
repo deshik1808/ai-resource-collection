@@ -110,3 +110,47 @@ test('nextRetryState: reads attempts stored as text by Google Sheets', () => {
   assert.deepStrictEqual(nextRetryState({ attempts: '' }), { status: 'pending', attempts: 1 });
   assert.deepStrictEqual(nextRetryState({ attempts: '2' }), { status: 'check', attempts: 3 });
 });
+
+const { holdPlan } = require('../src/lib/sheet');
+
+function holdJob(fields) {
+  return { chat_id: '1', kind: 'youtube', source_url: SHORT_CANON, note: 'n', text: SHORT, retry_row: null, replace_row: null, ...fields };
+}
+
+test('holdPlan: Gemini quota on a new Short appends a pending row', () => {
+  const plan = holdPlan(holdJob({}), { temporary: true, empty: false }, [], NOW);
+  assert.strictEqual(plan.op, 'append');
+  assert.strictEqual(plan.row.status, 'pending');
+  assert.strictEqual(plan.row.source_url, SHORT_CANON);
+  assert.strictEqual(plan.notice, '⏸ Saved for later, will retry');
+});
+
+test('holdPlan: a permanent error appends a check row; a page keeps its domain as name', () => {
+  const plan = holdPlan(holdJob({ kind: 'page', source_url: 'https://www.example.com/x' }), { temporary: true, empty: false, name: 'example.com' }, [], NOW);
+  assert.strictEqual(plan.row.status, 'check', 'only Gemini errors can be temporary');
+  assert.strictEqual(plan.row.name, 'example.com');
+  assert.strictEqual(plan.notice, "⚠️ Couldn't read this, saved to check manually");
+});
+
+test('holdPlan: a held text message keeps the whole text in note', () => {
+  const plan = holdPlan(holdJob({ kind: 'text', source_url: '', text: 'superpowers skill', note: '' }), { temporary: false, empty: false }, [], NOW);
+  assert.strictEqual(plan.row.note, 'superpowers skill');
+});
+
+test('holdPlan: a retry that is still temporary updates the same row and stays quiet', () => {
+  const rows = [row({ row_number: 4, status: 'pending', attempts: 1 })];
+  const plan = holdPlan(holdJob({ retry_row: 4 }), { temporary: true, empty: false }, rows, NOW);
+  assert.deepStrictEqual(plan, { op: 'update', update: { row_number: 4, status: 'pending', attempts: 2 }, notice: '' });
+});
+
+test('holdPlan: a retry that fails for good moves the row to check and says so', () => {
+  const rows = [row({ row_number: 4, status: 'pending', attempts: 0 })];
+  const plan = holdPlan(holdJob({ retry_row: 4 }), { temporary: false, empty: false }, rows, NOW);
+  assert.deepStrictEqual(plan.update, { row_number: 4, status: 'check', attempts: 1 });
+  assert.strictEqual(plan.notice, "⚠️ Couldn't watch this, saved to check manually");
+});
+
+test('holdPlan: re-sharing a check item that fails again adds no row', () => {
+  const plan = holdPlan(holdJob({ replace_row: 7 }), { temporary: false, empty: true }, [], NOW);
+  assert.deepStrictEqual(plan, { op: 'none', notice: 'Nothing found in this one' });
+});

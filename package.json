@@ -1,0 +1,9 @@
+{
+  "name": "ai-resource-collection",
+  "private": true,
+  "description": "AI Basket: Telegram bot that saves AI resources to a Google Sheet via n8n",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "build": "node scripts/build.js"
+  }
+}

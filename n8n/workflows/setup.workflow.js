@@ -17,9 +17,8 @@ const createSpreadsheet = node({
       authentication: 'oAuth2',
       title: 'AI Basket',
       sheetsUi: { sheetValues: [{ title: 'resources' }] },
-      options: { locale: 'en_IN' },
     },
-    credentials: { googleSheetsOAuth2Api: { id: 'w6TcJFWBRSpoifCL', name: 'Google Sheets account' } },
+    credentials: { googleSheetsOAuth2Api: { id: 'kJtMXJFwpGaYguB1', name: 'Google Sheets account 2' } },
     output: [{ spreadsheetId: 'abc', spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/abc', sheets: [{ properties: { sheetId: 123, title: 'resources' } }] }],
   },
 });
@@ -39,7 +38,7 @@ const writeHeader = node({
       specifyBody: 'json',
       jsonBody: '{"values":[["saved_at","name","category","description","link","link_from","prompt_text","source_url","note","status","attempts"]]}',
     },
-    credentials: { googleSheetsOAuth2Api: { id: 'w6TcJFWBRSpoifCL', name: 'Google Sheets account' } },
+    credentials: { googleSheetsOAuth2Api: { id: 'kJtMXJFwpGaYguB1', name: 'Google Sheets account 2' } },
     output: [{ updatedRange: 'resources!A1:K1', updatedCells: 11 }],
   },
 });
@@ -59,7 +58,7 @@ const freezeAndFilter = node({
       specifyBody: 'json',
       jsonBody: expr('{"requests":[{"updateSheetProperties":{"properties":{"sheetId":{{ $("Create Spreadsheet").item.json.sheets[0].properties.sheetId }},"gridProperties":{"frozenRowCount":1}},"fields":"gridProperties.frozenRowCount"}},{"setBasicFilter":{"filter":{"range":{"sheetId":{{ $("Create Spreadsheet").item.json.sheets[0].properties.sheetId }},"startRowIndex":0,"startColumnIndex":0,"endColumnIndex":11}}}}]}'),
     },
-    credentials: { googleSheetsOAuth2Api: { id: 'w6TcJFWBRSpoifCL', name: 'Google Sheets account' } },
+    credentials: { googleSheetsOAuth2Api: { id: 'kJtMXJFwpGaYguB1', name: 'Google Sheets account 2' } },
     output: [{ spreadsheetId: 'abc', replies: [{}, {}] }],
   },
 });

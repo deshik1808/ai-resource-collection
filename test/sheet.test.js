@@ -154,3 +154,35 @@ test('holdPlan: re-sharing a check item that fails again adds no row', () => {
   const plan = holdPlan(holdJob({ replace_row: 7 }), { temporary: false, empty: true }, [], NOW);
   assert.deepStrictEqual(plan, { op: 'none', notice: 'Nothing found in this one' });
 });
+
+const { saveRows } = require('../src/lib/sheet');
+
+test('saveRows: new resources become rows; duplicates of the Sheet or of each other are skipped', () => {
+  const sheet = [row({ name: 'superpowers', category: 'Skill', link: 'https://github.com/obra/superpowers' })];
+  const resources = [
+    { name: 'superpowers', category: 'Skill', description: 'd', link_in_source: '', prompt_text: '' },
+    { name: 'Taste', category: 'Skill', description: 'aesthetic', link_in_source: '', prompt_text: '' },
+    { name: 'taste', category: 'Skill', description: 'same again', link_in_source: '', prompt_text: '' },
+  ];
+  const links = [
+    { link: 'https://github.com/obra/superpowers', link_from: 'skills.sh' },
+    { link: '', link_from: 'not found' },
+    { link: '', link_from: 'not found' },
+  ];
+  const job = { source_url: SHORT_CANON, note: 'from class', kind: 'youtube' };
+  const out = saveRows(resources, links, sheet, job, NOW);
+  assert.deepStrictEqual(out.skipped, ['superpowers', 'taste']);
+  assert.strictEqual(out.rows.length, 1);
+  assert.strictEqual(out.rows[0].name, 'Taste');
+  assert.strictEqual(out.rows[0].link_from, 'not found');
+  assert.strictEqual(out.rows[0].source_url, SHORT_CANON);
+  assert.strictEqual(out.rows[0].note, 'from class');
+});
+
+test('saveRows: a text job keeps no source_url and the text is not copied into note', () => {
+  const out = saveRows([{ name: 'NotebookLM', category: 'Tool', description: '', link_in_source: '', prompt_text: '' }],
+    [{ link: 'https://workspace.google.com/products/gemini-notebook', link_from: 'search' }], [],
+    { source_url: '', note: '', kind: 'text' }, NOW);
+  assert.strictEqual(out.rows[0].source_url, '');
+  assert.strictEqual(out.rows[0].link, 'https://workspace.google.com/products/gemini-notebook');
+});

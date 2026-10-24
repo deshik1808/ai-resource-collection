@@ -148,4 +148,19 @@ function holdPlan(job, reason, rows, now) {
   return { op: 'append', row, notice };
 }
 
-module.exports = { toRow, holdRow, findDuplicate, planJobs, nextRetryState, holdPlan };
+/** Rows to append for one job: skips resources already in the Sheet or repeated within this job. */
+function saveRows(resources, links, sheetRows, job, now) {
+  const accepted = [];
+  const skipped = [];
+  resources.forEach((r, i) => {
+    const found = links[i] || { link: '', link_from: 'not found' };
+    if (findDuplicate(r, found.link, [...sheetRows, ...accepted])) {
+      skipped.push(r.name);
+      return;
+    }
+    accepted.push(toRow(r, { link: found.link, link_from: found.link_from, source_url: job.source_url, note: job.note, now }));
+  });
+  return { rows: accepted, skipped };
+}
+
+module.exports = { toRow, holdRow, findDuplicate, planJobs, nextRetryState, holdPlan, saveRows };

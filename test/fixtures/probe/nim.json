@@ -1,0 +1,18 @@
+{
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"resources\":[{\"name\":\"superpowers\",\"category\":\"Skill\",\"description\":\"\",\"link_in_source\":\"\",\"prompt_text\":\"\"},{\"name\":\"NotebookLM\",\"category\":\"Tool\",\"description\":\"\",\"link_in_source\":\"\",\"prompt_text\":\"\"}]}"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+  "usage": {
+    "prompt_tokens": 107,
+    "completion_tokens": 2623,
+    "reasoning_tokens": 2571
+  }
+}

@@ -128,7 +128,7 @@ test('nimRequest: OpenAI-style chat body with prompt and content', () => {
     model: 'meta/llama-3.3-70b-instruct',
     messages: [{ role: 'user', content: 'PROMPT\nCONTENT' }],
     temperature: 0.2,
-    max_tokens: 4096,
+    max_tokens: 16384,
   });
 });
 

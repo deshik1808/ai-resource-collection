@@ -121,7 +121,7 @@ function nimRequest(model, prompt, content) {
     model,
     messages: [{ role: 'user', content: `${prompt}\n${content}` }],
     temperature: 0.2,
-    max_tokens: 4096,
+    max_tokens: 16384,
   };
 }
 

@@ -196,3 +196,10 @@ test('toRow, holdRow and saveRows carry stars (blank when unknown)', () => {
   assert.strictEqual(rows[0].stars, 304545);
   assert.strictEqual(saveRows([skill], [{ link: '', link_from: 'not found', stars: null }], [], job, NOW).rows[0].stars, '');
 });
+
+test('saveRows: an empty description falls back to the link source text; the AI one wins', () => {
+  const job = { source_url: '', note: '' };
+  const link = { link: 'https://github.com/obra/superpowers', link_from: 'github', stars: 1, about: 'An agentic skills framework' };
+  assert.strictEqual(saveRows([{ ...skill, description: '' }], [link], [], job, NOW).rows[0].description, 'An agentic skills framework');
+  assert.strictEqual(saveRows([skill], [link], [], job, NOW).rows[0].description, 'Workflows');
+});

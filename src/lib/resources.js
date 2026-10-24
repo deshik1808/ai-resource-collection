@@ -113,6 +113,11 @@ function repoStars(json) {
   return typeof stars === 'number' ? stars : null;
 }
 
+/** @returns {string} the repo's owner-written description, at most 200 characters */
+function repoAbout(json) {
+  return trimmed(json?.description).slice(0, DESCRIPTION_MAX);
+}
+
 /**
  * Popularity decides between the skills.sh match and same-named GitHub repos:
  * the most-starred one wins, so a small copy never beats the original.
@@ -120,7 +125,7 @@ function repoStars(json) {
  * @param {{url:string}|null} skillMatch from matchSkill
  * @param {object|null} pack GitHub answer for the skills.sh match's repo
  * @param {object[]} items GitHub repository search results
- * @returns {{url:string, link_from:string, stars:number|null}|null}
+ * @returns {{url:string, link_from:string, stars:number|null, about:string}|null}
  */
 function chooseLink(skillMatch, pack, items, name) {
   const wanted = skillKey(name);
@@ -130,17 +135,17 @@ function chooseLink(skillMatch, pack, items, name) {
     const repo = repoOf(skillMatch.url).toLowerCase();
     const listed = (items || []).find((item) => String(item.full_name || repoOf(item.html_url)).toLowerCase() === repo);
     const stars = repoStars(pack) ?? repoStars(listed);
-    candidates.push({ url: skillMatch.url, link_from: 'skills.sh', stars, repo });
+    candidates.push({ url: skillMatch.url, link_from: 'skills.sh', stars, about: repoAbout(pack) || repoAbout(listed), repo });
   }
   for (const item of repos) {
     if (candidates.some((c) => c.repo === repoOf(item.html_url).toLowerCase())) continue;
-    candidates.push({ url: item.html_url, link_from: 'github', stars: repoStars(item), repo: repoOf(item.html_url).toLowerCase() });
+    candidates.push({ url: item.html_url, link_from: 'github', stars: repoStars(item), about: repoAbout(item), repo: repoOf(item.html_url).toLowerCase() });
   }
   let best = null;
   for (const c of candidates) {
     if (!best || (c.stars ?? -1) > (best.stars ?? -1)) best = c;
   }
-  return best && { url: best.url, link_from: best.link_from, stars: best.stars };
+  return best && { url: best.url, link_from: best.link_from, stars: best.stars, about: best.about };
 }
 
 /** Text of an AI answer: Gemini node output or an OpenAI-style (NVIDIA NIM) response. */
@@ -197,4 +202,4 @@ function pickRequest(model, prompt, resource, results) {
   return nimRequest(model, prompt, `${about}\n\nResults:\n${list}`);
 }
 
-module.exports = { parseResources, pickIndex, searchName, matchSkill, repoOf, repoStars, chooseLink, aiText, isTemporaryError, nimRequest, readerOutcome, linkAlive, pickRequest };
+module.exports = { parseResources, pickIndex, searchName, matchSkill, repoOf, repoStars, repoAbout, chooseLink, aiText, isTemporaryError, nimRequest, readerOutcome, linkAlive, pickRequest };

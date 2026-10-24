@@ -213,7 +213,7 @@ test('chooseLink: live bug — a 11-star copy from skills.sh loses to the 304k-s
   assert.deepStrictEqual(chooseLink(copy, copyRepo, ghSearch, 'superpowers skill'), {
     url: 'https://github.com/obra/superpowers',
     link_from: 'github',
-    stars: 304545,
+    stars: 304545, about: ''
   });
 });
 
@@ -222,7 +222,7 @@ test('chooseLink: a skill inside a popular pack keeps its skills.sh page', () =>
   assert.deepStrictEqual(chooseLink(matchSkill(skillsSh, 'using-superpowers'), pack, ghSearch, 'using-superpowers'), {
     url: 'https://skills.sh/obra/superpowers/using-superpowers',
     link_from: 'skills.sh',
-    stars: 304545,
+    stars: 304545, about: ''
   });
 });
 
@@ -232,19 +232,36 @@ test('chooseLink: repo name must match exactly; forks never count', () => {
     { name: 'superpowers', html_url: 'https://github.com/b/superpowers', fork: true, stargazers_count: 5000 },
     { name: 'Superpowers', html_url: 'https://github.com/c/Superpowers', fork: false, stargazers_count: 40 },
   ];
-  assert.deepStrictEqual(chooseLink(null, null, items, 'superpowers'), { url: 'https://github.com/c/Superpowers', link_from: 'github', stars: 40 });
+  assert.deepStrictEqual(chooseLink(null, null, items, 'superpowers'), { url: 'https://github.com/c/Superpowers', link_from: 'github', stars: 40, about: '' });
 });
 
 test('chooseLink: GitHub unavailable keeps the skills.sh match with unknown stars', () => {
   const found = matchSkill(skillsSh, 'using-superpowers');
-  assert.deepStrictEqual(chooseLink(found, null, [], 'using-superpowers'), { url: found.url, link_from: 'skills.sh', stars: null });
+  assert.deepStrictEqual(chooseLink(found, null, [], 'using-superpowers'), { url: found.url, link_from: 'skills.sh', stars: null, about: '' });
 });
 
 test('chooseLink: the skills.sh pack found in GitHub search takes its stars from there', () => {
   const found = { name: 'superpowers', url: 'https://github.com/obra/superpowers' };
-  assert.deepStrictEqual(chooseLink(found, null, ghSearch, 'superpowers'), { url: 'https://github.com/obra/superpowers', link_from: 'skills.sh', stars: 304545 });
+  assert.deepStrictEqual(chooseLink(found, null, ghSearch, 'superpowers'), { url: 'https://github.com/obra/superpowers', link_from: 'skills.sh', stars: 304545, about: '' });
 });
 
 test('chooseLink: nothing found', () => {
   assert.strictEqual(chooseLink(null, null, [], 'superpowers'), null);
+});
+
+test('chooseLink: carries the owner-written GitHub description as `about`', () => {
+  const items = [{ name: 'superpowers', full_name: 'obra/superpowers', html_url: 'https://github.com/obra/superpowers', fork: false, stargazers_count: 304545, description: 'An agentic skills framework' }];
+  assert.strictEqual(chooseLink(null, null, items, 'superpowers').about, 'An agentic skills framework');
+  const pack = { full_name: 'obra/superpowers', stargazers_count: 304545, description: 'Pack text' };
+  assert.strictEqual(chooseLink(matchSkill(skillsSh, 'using-superpowers'), pack, [], 'using-superpowers').about, 'Pack text');
+  assert.strictEqual(chooseLink(matchSkill(skillsSh, 'using-superpowers'), null, [], 'using-superpowers').about, '');
+});
+
+const { repoAbout } = require('../src/lib/resources');
+
+test('repoAbout: GitHub description, trimmed to 200 characters, empty when missing', () => {
+  assert.strictEqual(repoAbout({ description: '  Skills for agents  ' }), 'Skills for agents');
+  assert.strictEqual(repoAbout({ description: 'x'.repeat(300) }).length, 200);
+  assert.strictEqual(repoAbout({ description: null }), '');
+  assert.strictEqual(repoAbout(undefined), '');
 });

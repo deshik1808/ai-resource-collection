@@ -160,7 +160,8 @@ function saveRows(resources, links, sheetRows, job, now) {
       skipped.push(r.name);
       return;
     }
-    accepted.push(toRow(r, { link: found.link, link_from: found.link_from, stars: found.stars, source_url: job.source_url, note: job.note, now }));
+    const described = r.description ? r : { ...r, description: found.about || '' };
+    accepted.push(toRow(described, { link: found.link, link_from: found.link_from, stars: found.stars, source_url: job.source_url, note: job.note, now }));
   });
   return { rows: accepted, skipped };
 }

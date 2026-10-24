@@ -136,4 +136,20 @@ function readerOutcome(job, raw) {
   return { resources: parsed.resources };
 }
 
-module.exports = { parseResources, pickIndex, matchSkill, aiText, isTemporaryError, nimRequest, readerOutcome };
+/** A checked link is dead only on 404/410 or when the site cannot be reached at all. */
+function linkAlive(response) {
+  if (!response || response.error) return false;
+  const code = Number(response.statusCode);
+  return code !== 404 && code !== 410;
+}
+
+/** NIM request asking which numbered search result is the resource's official page. */
+function pickRequest(model, prompt, resource, results) {
+  const about = `${resource.name} (${resource.category})${resource.description ? `: ${resource.description}` : ''}`;
+  const list = results
+    .map((r, i) => `${i}. ${r.title} — ${r.url} — ${String(r.content || '').slice(0, 200)}`)
+    .join('\n');
+  return nimRequest(model, prompt, `${about}\n\nResults:\n${list}`);
+}
+
+module.exports = { parseResources, pickIndex, matchSkill, aiText, isTemporaryError, nimRequest, readerOutcome, linkAlive, pickRequest };

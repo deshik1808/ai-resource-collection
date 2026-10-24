@@ -151,3 +151,26 @@ test('readerOutcome: broken answer holds for checking; empty answer holds as emp
   assert.deepStrictEqual(readerOutcome(job({}), '{"resources":[{"na').hold, { temporary: false, empty: false });
   assert.deepStrictEqual(readerOutcome(job({}), '{"resources":[]}').hold, { temporary: false, empty: true });
 });
+
+const { linkAlive, pickRequest } = require('../src/lib/resources');
+
+test('linkAlive: only not-found answers or no answer at all mean dead', () => {
+  assert.strictEqual(linkAlive({ statusCode: 200 }), true);
+  assert.strictEqual(linkAlive({ statusCode: 403 }), true, 'sites that block bots still exist');
+  assert.strictEqual(linkAlive({ statusCode: 429 }), true);
+  assert.strictEqual(linkAlive({ statusCode: 404 }), false);
+  assert.strictEqual(linkAlive({ statusCode: 410 }), false);
+  assert.strictEqual(linkAlive({ error: { message: 'getaddrinfo ENOTFOUND x.example' } }), false);
+});
+
+test('pickRequest: numbered results, index-only answer', () => {
+  const body = pickRequest('m', 'PICK', { name: 'NotebookLM', category: 'Tool', description: 'chat with PDFs' },
+    [{ title: 'News', url: 'https://news.example/a', content: 'x'.repeat(500) }, { title: 'Gemini Notebook', url: 'https://workspace.google.com/products/gemini-notebook', content: 'official' }]);
+  const text = body.messages[0].content;
+  assert.ok(text.startsWith('PICK\n'));
+  assert.ok(text.includes('NotebookLM (Tool): chat with PDFs'));
+  assert.ok(text.includes('0. News — https://news.example/a — ' + 'x'.repeat(200)));
+  assert.ok(!text.includes('x'.repeat(201)));
+  assert.ok(text.includes('1. Gemini Notebook — https://workspace.google.com/products/gemini-notebook — official'));
+  assert.strictEqual(body.model, 'm');
+});

@@ -1,4 +1,4 @@
-import { workflow, node, trigger, switchCase, ifElse, expr, newCredential } from '@n8n/workflow-sdk';
+import { workflow, node, trigger, switchCase, ifElse, expr } from '@n8n/workflow-sdk';
 
 const jobTrigger = trigger({
   type: 'n8n-nodes-base.executeWorkflowTrigger',
@@ -139,9 +139,9 @@ const readWithNim = node({
       contentType: 'json',
       specifyBody: 'json',
       jsonBody: expr('{{ JSON.stringify($json.body) }}'),
-      options: { timeout: 60000 },
+      options: { timeout: 120000 },
     },
-    credentials: { httpHeaderAuth: newCredential('NVIDIA NIM') },
+    credentials: { httpHeaderAuth: { id: 'jD6IWxW6RPTF5yem', name: 'Header Auth account NVIDIA NIM' } },
     output: [{ choices: [{ message: { content: '{"resources":[]}' } }] }],
   },
 });

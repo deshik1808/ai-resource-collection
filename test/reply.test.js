@@ -142,3 +142,25 @@ test('combineReply: a quiet retry with nothing new sends nothing', () => {
   assert.strictEqual(combineReply([{ saved: [], skipped: [], notices: [], label: 'Short' }], [], true), '');
   assert.strictEqual(combineReply([{ saved: [], skipped: [], notices: [], label: 'Short' }], [], false), 'Nothing found in this one');
 });
+
+const { formatStars } = require('../src/lib/reply');
+
+test('formatStars: short counts, low-star warning, blank when unknown', () => {
+  assert.strictEqual(formatStars(304545), '⭐ 305k');
+  assert.strictEqual(formatStars('1234'), '⭐ 1.2k');
+  assert.strictEqual(formatStars(1000), '⭐ 1k');
+  assert.strictEqual(formatStars(100), '⭐ 100');
+  assert.strictEqual(formatStars(11), '⭐ 11 ⚠️ low stars, check');
+  assert.strictEqual(formatStars(0), '⭐ 0 ⚠️ low stars, check');
+  assert.strictEqual(formatStars(''), '');
+  assert.strictEqual(formatStars(null), '');
+  assert.strictEqual(formatStars(undefined), '');
+});
+
+test('formatSummary and formatFind show stars after the link', () => {
+  const r = row({ name: 'superpowers', category: 'Skill', description: 'workflows', link: 'https://github.com/obra/superpowers', link_from: 'github', stars: 304545 });
+  assert.ok(formatSummary([r], [], [], 'Short').includes('· https://github.com/obra/superpowers ⭐ 305k'));
+  assert.strictEqual(formatFind('x', { rows: [r], more: 0 }), '🧩 superpowers — https://github.com/obra/superpowers ⭐ 305k');
+  const copy = { ...r, link: 'https://github.com/101-skills/superpowers', stars: 11 };
+  assert.ok(formatSummary([copy], [], [], 'Short').endsWith('⭐ 11 ⚠️ low stars, check'));
+});

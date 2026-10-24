@@ -12,7 +12,7 @@ function istStamp(now) {
 }
 
 /** @typedef {{name:string, category:'Skill'|'Tool'|'Prompt'|'Website', description:string, link_in_source:string, prompt_text:string}} Resource */
-/** @typedef {{saved_at:string, name:string, category:string, description:string, link:string, link_from:string, prompt_text:string, source_url:string, note:string, status:string, attempts:number, row_number?:number}} Row */
+/** @typedef {{saved_at:string, name:string, category:string, description:string, link:string, link_from:string, prompt_text:string, source_url:string, note:string, status:string, attempts:number, stars:number|'', row_number?:number}} Row */
 /** @typedef {{chat_id:string, kind:'youtube'|'page'|'text', source_url:string, note:string, text:string, retry_row:number|null, replace_row:number|null}} Job */
 
 /** @param {Resource} r @returns {Row} */
@@ -29,6 +29,7 @@ function toRow(r, ctx) {
     note: ctx.note,
     status: 'ok',
     attempts: 0,
+    stars: ctx.stars ?? '',
   };
 }
 
@@ -45,6 +46,7 @@ function holdRow(ctx) {
     note: ctx.note,
     status: ctx.status,
     attempts: 0,
+    stars: '',
   };
 }
 
@@ -158,7 +160,7 @@ function saveRows(resources, links, sheetRows, job, now) {
       skipped.push(r.name);
       return;
     }
-    accepted.push(toRow(r, { link: found.link, link_from: found.link_from, source_url: job.source_url, note: job.note, now }));
+    accepted.push(toRow(r, { link: found.link, link_from: found.link_from, stars: found.stars, source_url: job.source_url, note: job.note, now }));
   });
   return { rows: accepted, skipped };
 }

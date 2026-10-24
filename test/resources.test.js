@@ -174,3 +174,77 @@ test('pickRequest: numbered results, index-only answer', () => {
   assert.ok(text.includes('1. Gemini Notebook — https://workspace.google.com/products/gemini-notebook — official'));
   assert.strictEqual(body.model, 'm');
 });
+
+const { searchName, repoOf, chooseLink, repoStars } = require('../src/lib/resources');
+const ghSearch = require('./fixtures/probe/github-search.json').items;
+const copyRepo = require('./fixtures/probe/github-repo.json');
+const skillsShSkillWord = require('./fixtures/probe/skills-sh-skill-word.json').skills;
+
+test('searchName: drops a trailing "skill" word and bracketed credits', () => {
+  assert.strictEqual(searchName('superpowers skill'), 'superpowers');
+  assert.strictEqual(searchName('Superpowers Lab Skills'), 'Superpowers Lab');
+  assert.strictEqual(searchName('motion (Emil Kowalski)'), 'motion');
+  assert.strictEqual(searchName('  NotebookLM '), 'NotebookLM');
+});
+
+test('matchSkill: bracketed credits are ignored when matching', () => {
+  assert.strictEqual(matchSkill(skillsSh, 'using-superpowers (Jesse Vincent)').name, 'using-superpowers');
+});
+
+test('repoOf: owner/repo of a GitHub or skills.sh link, else empty', () => {
+  assert.strictEqual(repoOf('https://github.com/obra/superpowers'), 'obra/superpowers');
+  assert.strictEqual(repoOf('https://github.com/obra/superpowers.git'), 'obra/superpowers');
+  assert.strictEqual(repoOf('https://www.github.com/obra/superpowers/tree/main/skills'), 'obra/superpowers');
+  assert.strictEqual(repoOf('https://skills.sh/obra/superpowers/using-superpowers'), 'obra/superpowers');
+  assert.strictEqual(repoOf('https://github.com/obra'), '');
+  assert.strictEqual(repoOf('https://notebooklm.google'), '');
+  assert.strictEqual(repoOf(''), '');
+});
+
+test('repoStars: star count from a GitHub repo answer, null when missing', () => {
+  assert.strictEqual(repoStars(copyRepo), 11);
+  assert.strictEqual(repoStars({ message: 'API rate limit exceeded' }), null);
+  assert.strictEqual(repoStars(undefined), null);
+});
+
+test('chooseLink: live bug — a 11-star copy from skills.sh loses to the 304k-star original', () => {
+  const copy = matchSkill(skillsShSkillWord, 'superpowers skill');
+  assert.strictEqual(copy.url, 'https://github.com/101-skills/superpowers', 'reproduces execution 4033');
+  assert.deepStrictEqual(chooseLink(copy, copyRepo, ghSearch, 'superpowers skill'), {
+    url: 'https://github.com/obra/superpowers',
+    link_from: 'github',
+    stars: 304545,
+  });
+});
+
+test('chooseLink: a skill inside a popular pack keeps its skills.sh page', () => {
+  const pack = { full_name: 'obra/superpowers', stargazers_count: 304545 };
+  assert.deepStrictEqual(chooseLink(matchSkill(skillsSh, 'using-superpowers'), pack, ghSearch, 'using-superpowers'), {
+    url: 'https://skills.sh/obra/superpowers/using-superpowers',
+    link_from: 'skills.sh',
+    stars: 304545,
+  });
+});
+
+test('chooseLink: repo name must match exactly; forks never count', () => {
+  const items = [
+    { name: 'superpowers-zh', html_url: 'https://github.com/a/superpowers-zh', fork: false, stargazers_count: 9000 },
+    { name: 'superpowers', html_url: 'https://github.com/b/superpowers', fork: true, stargazers_count: 5000 },
+    { name: 'Superpowers', html_url: 'https://github.com/c/Superpowers', fork: false, stargazers_count: 40 },
+  ];
+  assert.deepStrictEqual(chooseLink(null, null, items, 'superpowers'), { url: 'https://github.com/c/Superpowers', link_from: 'github', stars: 40 });
+});
+
+test('chooseLink: GitHub unavailable keeps the skills.sh match with unknown stars', () => {
+  const found = matchSkill(skillsSh, 'using-superpowers');
+  assert.deepStrictEqual(chooseLink(found, null, [], 'using-superpowers'), { url: found.url, link_from: 'skills.sh', stars: null });
+});
+
+test('chooseLink: the skills.sh pack found in GitHub search takes its stars from there', () => {
+  const found = { name: 'superpowers', url: 'https://github.com/obra/superpowers' };
+  assert.deepStrictEqual(chooseLink(found, null, ghSearch, 'superpowers'), { url: 'https://github.com/obra/superpowers', link_from: 'skills.sh', stars: 304545 });
+});
+
+test('chooseLink: nothing found', () => {
+  assert.strictEqual(chooseLink(null, null, [], 'superpowers'), null);
+});

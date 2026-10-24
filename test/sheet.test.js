@@ -186,3 +186,13 @@ test('saveRows: a text job keeps no source_url and the text is not copied into n
   assert.strictEqual(out.rows[0].source_url, '');
   assert.strictEqual(out.rows[0].link, 'https://workspace.google.com/products/gemini-notebook');
 });
+
+test('toRow, holdRow and saveRows carry stars (blank when unknown)', () => {
+  assert.strictEqual(toRow(skill, { link: 'https://github.com/obra/superpowers', link_from: 'github', stars: 304545, source_url: '', note: '', now: NOW }).stars, 304545);
+  assert.strictEqual(toRow(skill, { link: '', link_from: 'not found', source_url: '', note: '', now: NOW }).stars, '');
+  assert.strictEqual(holdRow({ source_url: SHORT_CANON, note: '', status: 'check', now: NOW }).stars, '');
+  const job = { source_url: SHORT_CANON, note: '' };
+  const { rows } = saveRows([skill], [{ link: 'https://github.com/obra/superpowers', link_from: 'github', stars: 304545 }], [], job, NOW);
+  assert.strictEqual(rows[0].stars, 304545);
+  assert.strictEqual(saveRows([skill], [{ link: '', link_from: 'not found', stars: null }], [], job, NOW).rows[0].stars, '');
+});

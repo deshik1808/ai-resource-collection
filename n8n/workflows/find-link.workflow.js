@@ -15,8 +15,8 @@ const start = node({
   version: 2,
   config: {
     name: 'Start',
-    parameters: { mode: 'runOnceForAllItems', jsCode: __INCLUDE__('adapters/fl-start.js') },
-    output: [{ resource: { name: 'NotebookLM', category: 'Tool' }, job: { kind: 'youtube' }, route: 'search', url: '', link_from: 'source' }],
+    parameters: { mode: 'runOnceForAllItems', jsCode: __INCLUDE__('lib/resources.js', 'adapters/fl-start.js') },
+    output: [{ resource: { name: 'NotebookLM', category: 'Tool' }, job: { kind: 'youtube' }, route: 'search', query: 'NotebookLM', url: '', link_from: 'source' }],
   },
 });
 
@@ -55,7 +55,7 @@ const skillsSearch = node({
     onError: 'continueRegularOutput',
     parameters: {
       method: 'GET',
-      url: expr('https://skills.sh/api/search?q={{ encodeURIComponent($json.resource.name) }}'),
+      url: expr('https://skills.sh/api/search?q={{ encodeURIComponent($json.query) }}'),
       options: { timeout: 10000 },
     },
     output: [{ skills: [] }],
@@ -68,7 +68,67 @@ const matchSkillNode = node({
   config: {
     name: 'Match Skill',
     parameters: { mode: 'runOnceForAllItems', jsCode: __INCLUDE__('lib/resources.js', 'adapters/fl-match-skill.js') },
-    output: [{ matched: false, url: '', link_from: '' }],
+    output: [{ skillMatch: null, repo: '' }],
+  },
+});
+
+const GITHUB_HEADERS = { parameters: [{ name: 'User-Agent', value: 'AIBasket/1.0' }, { name: 'Accept', value: 'application/vnd.github+json' }] };
+
+const githubSearch = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.5,
+  config: {
+    name: 'GitHub Search',
+    onError: 'continueRegularOutput',
+    parameters: {
+      method: 'GET',
+      url: expr('https://api.github.com/search/repositories?q={{ encodeURIComponent($("Start").first().json.query + " in:name") }}&sort=stars&order=desc&per_page=10'),
+      sendHeaders: true,
+      headerParameters: GITHUB_HEADERS,
+      options: { response: { response: { fullResponse: true, neverError: true } }, timeout: 10000 },
+    },
+    output: [{ statusCode: 200, headers: {}, body: { items: [] } }],
+  },
+});
+
+const hasPack = ifElse({
+  version: 2.2,
+  config: {
+    name: 'Has Pack?',
+    parameters: {
+      conditions: {
+        options: { caseSensitive: true, leftValue: '', typeValidation: 'loose' },
+        conditions: [{ leftValue: expr('{{ Boolean($("Match Skill").first().json.repo) }}'), operator: { type: 'boolean', operation: 'true', singleValue: true } }],
+        combinator: 'and',
+      },
+    },
+  },
+});
+
+const packRepo = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.5,
+  config: {
+    name: 'Pack Repo',
+    onError: 'continueRegularOutput',
+    parameters: {
+      method: 'GET',
+      url: expr('https://api.github.com/repos/{{ $("Match Skill").first().json.repo }}'),
+      sendHeaders: true,
+      headerParameters: GITHUB_HEADERS,
+      options: { response: { response: { fullResponse: true, neverError: true } }, timeout: 10000 },
+    },
+    output: [{ statusCode: 200, headers: {}, body: { full_name: 'obra/superpowers', stargazers_count: 1 } }],
+  },
+});
+
+const chooseLinkNode = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Choose Link',
+    parameters: { mode: 'runOnceForAllItems', jsCode: __INCLUDE__('lib/resources.js', 'adapters/fl-choose-link.js') },
+    output: [{ matched: true, url: 'https://github.com/obra/superpowers', link_from: 'github', stars: 1 }],
   },
 });
 
@@ -194,7 +254,7 @@ const checkInput = node({
   config: {
     name: 'Check Input',
     parameters: { mode: 'runOnceForAllItems', jsCode: __INCLUDE__('adapters/fl-check-input.js') },
-    output: [{ url: 'https://example.com', link_from: 'search' }],
+    output: [{ url: 'https://example.com', link_from: 'search', stars: null }],
   },
 });
 
@@ -221,7 +281,48 @@ const linkResult = node({
   config: {
     name: 'Link Result',
     parameters: { mode: 'runOnceForAllItems', jsCode: __INCLUDE__('lib/resources.js', 'adapters/fl-link-result.js') },
-    output: [{ link: 'https://example.com', link_from: 'search' }],
+    output: [{ link: 'https://example.com', link_from: 'search', stars: null, repo: '' }],
+  },
+});
+
+const needsStars = ifElse({
+  version: 2.2,
+  config: {
+    name: 'Needs Stars?',
+    parameters: {
+      conditions: {
+        options: { caseSensitive: true, leftValue: '', typeValidation: 'loose' },
+        conditions: [{ leftValue: expr('{{ Boolean($json.repo) }}'), operator: { type: 'boolean', operation: 'true', singleValue: true } }],
+        combinator: 'and',
+      },
+    },
+  },
+});
+
+const repoStarsNode = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.5,
+  config: {
+    name: 'Repo Stars',
+    onError: 'continueRegularOutput',
+    parameters: {
+      method: 'GET',
+      url: expr('https://api.github.com/repos/{{ $json.repo }}'),
+      sendHeaders: true,
+      headerParameters: GITHUB_HEADERS,
+      options: { response: { response: { fullResponse: true, neverError: true } }, timeout: 10000 },
+    },
+    output: [{ statusCode: 200, headers: {}, body: { stargazers_count: 1 } }],
+  },
+});
+
+const finalResult = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Final Result',
+    parameters: { mode: 'runOnceForAllItems', jsCode: __INCLUDE__('lib/resources.js', 'adapters/fl-final-result.js') },
+    output: [{ link: 'https://example.com', link_from: 'search', stars: null }],
   },
 });
 
@@ -231,11 +332,13 @@ export default workflow('ai-basket-find-link', 'AI Basket – Find Link')
   .to(route
     .onCase(0, checkInput)
     .onCase(1, promptResult)
-    .onCase(2, skillsSearch.to(matchSkillNode.to(isMatched.onTrue(checkInput).onFalse(tavily))))
+    .onCase(2, skillsSearch.to(matchSkillNode.to(githubSearch.to(hasPack.onTrue(packRepo.to(chooseLinkNode)).onFalse(chooseLinkNode))))))
     .onCase(3, tavily))
+  .add(chooseLinkNode)
+  .to(isMatched.onTrue(checkInput).onFalse(tavily))
   .add(tavily)
   .to(buildPick.to(hasResults
     .onTrue(pick.to(pickIndexNode.to(isPicked.onTrue(checkInput).onFalse(notFound))))
     .onFalse(notFound)))
   .add(checkInput)
-  .to(checkLink.to(linkResult));
+  .to(checkLink.to(linkResult.to(needsStars.onTrue(repoStarsNode.to(finalResult)).onFalse(finalResult))));

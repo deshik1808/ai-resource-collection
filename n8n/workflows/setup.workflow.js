@@ -30,16 +30,16 @@ const writeHeader = node({
     name: 'Write Header',
     parameters: {
       method: 'PUT',
-      url: expr('https://sheets.googleapis.com/v4/spreadsheets/{{ $json.spreadsheetId }}/values/resources%21A1%3AK1?valueInputOption=RAW'),
+      url: expr('https://sheets.googleapis.com/v4/spreadsheets/{{ $json.spreadsheetId }}/values/resources%21A1%3AL1?valueInputOption=RAW'),
       authentication: 'predefinedCredentialType',
       nodeCredentialType: 'googleSheetsOAuth2Api',
       sendBody: true,
       contentType: 'json',
       specifyBody: 'json',
-      jsonBody: '{"values":[["saved_at","name","category","description","link","link_from","prompt_text","source_url","note","status","attempts"]]}',
+      jsonBody: '{"values":[["saved_at","name","category","description","link","link_from","prompt_text","source_url","note","status","attempts","stars"]]}',
     },
     credentials: { googleSheetsOAuth2Api: { id: 'kJtMXJFwpGaYguB1', name: 'Google Sheets account 2' } },
-    output: [{ updatedRange: 'resources!A1:K1', updatedCells: 11 }],
+    output: [{ updatedRange: 'resources!A1:L1', updatedCells: 12 }],
   },
 });
 
@@ -56,7 +56,7 @@ const freezeAndFilter = node({
       sendBody: true,
       contentType: 'json',
       specifyBody: 'json',
-      jsonBody: expr('{"requests":[{"updateSheetProperties":{"properties":{"sheetId":{{ $("Create Spreadsheet").item.json.sheets[0].properties.sheetId }},"gridProperties":{"frozenRowCount":1}},"fields":"gridProperties.frozenRowCount"}},{"setBasicFilter":{"filter":{"range":{"sheetId":{{ $("Create Spreadsheet").item.json.sheets[0].properties.sheetId }},"startRowIndex":0,"startColumnIndex":0,"endColumnIndex":11}}}}]}'),
+      jsonBody: expr('{"requests":[{"updateSheetProperties":{"properties":{"sheetId":{{ $("Create Spreadsheet").item.json.sheets[0].properties.sheetId }},"gridProperties":{"frozenRowCount":1}},"fields":"gridProperties.frozenRowCount"}},{"setBasicFilter":{"filter":{"range":{"sheetId":{{ $("Create Spreadsheet").item.json.sheets[0].properties.sheetId }},"startRowIndex":0,"startColumnIndex":0,"endColumnIndex":12}}}}]}'),
     },
     credentials: { googleSheetsOAuth2Api: { id: 'kJtMXJFwpGaYguB1', name: 'Google Sheets account 2' } },
     output: [{ spreadsheetId: 'abc', replies: [{}, {}] }],

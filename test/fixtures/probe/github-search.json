@@ -1,0 +1,85 @@
+{
+  "total_count": 2078,
+  "items": [
+    {
+      "name": "superpowers",
+      "full_name": "obra/superpowers",
+      "html_url": "https://github.com/obra/superpowers",
+      "fork": false,
+      "stargazers_count": 304545,
+      "forks_count": 27129
+    },
+    {
+      "name": "superpowers-zh",
+      "full_name": "jnMetaCode/superpowers-zh",
+      "html_url": "https://github.com/jnMetaCode/superpowers-zh",
+      "fork": false,
+      "stargazers_count": 8379,
+      "forks_count": 777
+    },
+    {
+      "name": "superpowers-core",
+      "full_name": "superpowers/superpowers-core",
+      "html_url": "https://github.com/superpowers/superpowers-core",
+      "fork": false,
+      "stargazers_count": 2188,
+      "forks_count": 165
+    },
+    {
+      "name": "superpowers-marketplace",
+      "full_name": "obra/superpowers-marketplace",
+      "html_url": "https://github.com/obra/superpowers-marketplace",
+      "fork": false,
+      "stargazers_count": 1307,
+      "forks_count": 267
+    },
+    {
+      "name": "superpowers-asset-packs",
+      "full_name": "sparklinlabs/superpowers-asset-packs",
+      "html_url": "https://github.com/sparklinlabs/superpowers-asset-packs",
+      "fork": false,
+      "stargazers_count": 1274,
+      "forks_count": 278
+    },
+    {
+      "name": "gemini-superpowers-antigravity",
+      "full_name": "anthonylee991/gemini-superpowers-antigravity",
+      "html_url": "https://github.com/anthonylee991/gemini-superpowers-antigravity",
+      "fork": false,
+      "stargazers_count": 838,
+      "forks_count": 112
+    },
+    {
+      "name": "superpowers-skills",
+      "full_name": "obra/superpowers-skills",
+      "html_url": "https://github.com/obra/superpowers-skills",
+      "fork": false,
+      "stargazers_count": 755,
+      "forks_count": 170
+    },
+    {
+      "name": "superpowers-lab",
+      "full_name": "obra/superpowers-lab",
+      "html_url": "https://github.com/obra/superpowers-lab",
+      "fork": false,
+      "stargazers_count": 433,
+      "forks_count": 37
+    },
+    {
+      "name": "superpowers-game",
+      "full_name": "superpowers/superpowers-game",
+      "html_url": "https://github.com/superpowers/superpowers-game",
+      "fork": false,
+      "stargazers_count": 406,
+      "forks_count": 94
+    },
+    {
+      "name": "superpowers-chrome",
+      "full_name": "obra/superpowers-chrome",
+      "html_url": "https://github.com/obra/superpowers-chrome",
+      "fork": false,
+      "stargazers_count": 363,
+      "forks_count": 57
+    }
+  ]
+}

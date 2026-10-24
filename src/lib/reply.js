@@ -4,17 +4,30 @@ const ICONS = { Skill: '🧩', Tool: '🔧', Prompt: '💬', Website: '🌐' };
 const TELEGRAM_LIMIT = 4096;
 const PREVIEW_CHARS = 100;
 const FIND_LIMIT = 10;
+const LOW_STARS = 100;
 const SEARCH_FIELDS = ['name', 'category', 'description', 'link', 'note', 'prompt_text'];
 
 function preview(text) {
   return String(text).slice(0, PREVIEW_CHARS);
 }
 
+/** "⭐ 305k"; below LOW_STARS adds a warning, since a small repo may be a copy. '' when unknown. */
+function formatStars(value) {
+  if (value === '' || value == null || !Number.isFinite(Number(value))) return '';
+  const stars = Number(value);
+  const short = stars < 1000 ? String(stars) : `${(stars / 1000).toFixed(stars < 10000 ? 1 : 0).replace(/\.0$/, '')}k`;
+  return `⭐ ${short}${stars < LOW_STARS ? ' ⚠️ low stars, check' : ''}`;
+}
+
+function withStars(link, row) {
+  return [link, formatStars(row.stars)].filter(Boolean).join(' ');
+}
+
 function linkPart(row) {
   if (row.category === 'Prompt' && row.prompt_text) return preview(row.prompt_text);
   if (row.link_from === 'not found') return '❓ link not found';
   if (!row.link) return '';
-  return row.link + (row.link_from === 'search' ? ' 🔎' : '');
+  return withStars(row.link + (row.link_from === 'search' ? ' 🔎' : ''), row);
 }
 
 function summaryLine(row) {
@@ -56,7 +69,7 @@ function findRows(rows, query) {
 function formatFind(query, result) {
   if (result.rows.length === 0) return `Nothing for "${query}".`;
   const lines = result.rows.map((row) => {
-    const target = row.category === 'Prompt' && row.prompt_text ? preview(row.prompt_text) : row.link || '❓ no link';
+    const target = row.category === 'Prompt' && row.prompt_text ? preview(row.prompt_text) : row.link ? withStars(row.link, row) : '❓ no link';
     return `${ICONS[row.category] || ''} ${row.name} — ${target}`;
   });
   if (result.more > 0) lines.push(`…and ${result.more} more. Add a word or open the Sheet.`);
@@ -92,4 +105,4 @@ function combineReply(results, planNotices, quiet) {
   return formatSummary(saved, skipped, notices, labels.length === 1 ? labels[0] : 'message');
 }
 
-module.exports = { ICONS, formatSummary, findRows, formatFind, holdNotice, labelFor, escapeHtml, combineReply };
+module.exports = { ICONS, formatStars, formatSummary, findRows, formatFind, holdNotice, labelFor, escapeHtml, combineReply };

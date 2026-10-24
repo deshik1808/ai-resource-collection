@@ -1,0 +1,705 @@
+{
+  "query": "superpowers skill",
+  "skills": [
+    {
+      "id": "obra/superpowers/using-superpowers",
+      "source": "obra/superpowers",
+      "skillId": "using-superpowers",
+      "name": "using-superpowers",
+      "installs": 270479
+    },
+    {
+      "id": "obra/superpowers/diagnosing-superpowers",
+      "source": "obra/superpowers",
+      "skillId": "diagnosing-superpowers",
+      "name": "diagnosing-superpowers",
+      "installs": 19996
+    },
+    {
+      "id": "jnmetacode/superpowers-zh/using-superpowers",
+      "source": "jnmetacode/superpowers-zh",
+      "skillId": "using-superpowers",
+      "name": "using-superpowers",
+      "installs": 1235
+    },
+    {
+      "id": "sickn33/agentic-awesome-skills/superpowers-lab",
+      "source": "sickn33/agentic-awesome-skills",
+      "skillId": "superpowers-lab",
+      "name": "superpowers-lab",
+      "installs": 1367
+    },
+    {
+      "id": "sickn33/agentic-awesome-skills/using-superpowers",
+      "source": "sickn33/agentic-awesome-skills",
+      "skillId": "using-superpowers",
+      "name": "using-superpowers",
+      "installs": 562
+    },
+    {
+      "id": "davila7/claude-code-templates/using-superpowers",
+      "source": "davila7/claude-code-templates",
+      "skillId": "using-superpowers",
+      "name": "using-superpowers",
+      "installs": 393
+    },
+    {
+      "id": "modelscope.cn/using-superpowers",
+      "source": "modelscope.cn",
+      "skillId": "using-superpowers",
+      "name": "using-superpowers",
+      "installs": 377
+    },
+    {
+      "id": "vercel-labs/skills/find-skills",
+      "source": "vercel-labs/skills",
+      "skillId": "find-skills",
+      "name": "find-skills",
+      "installs": 4018060
+    },
+    {
+      "id": "101-skills/superpowers/ai-video-generation",
+      "source": "101-skills/superpowers",
+      "skillId": "ai-video-generation",
+      "name": "ai-video-generation",
+      "installs": 853783
+    },
+    {
+      "id": "qu-skills/superpowers/ai-video-generation",
+      "source": "qu-skills/superpowers",
+      "skillId": "ai-video-generation",
+      "name": "ai-video-generation",
+      "installs": 536362
+    },
+    {
+      "id": "skills-shell/superpowers/ai-video-generation",
+      "source": "skills-shell/superpowers",
+      "skillId": "ai-video-generation",
+      "name": "ai-video-generation",
+      "installs": 398486
+    },
+    {
+      "id": "its-a-skill-issue/superpowers/ai-video-generation",
+      "source": "its-a-skill-issue/superpowers",
+      "skillId": "ai-video-generation",
+      "name": "ai-video-generation",
+      "installs": 384941
+    },
+    {
+      "id": "bankai-skills/superpowers/ai-video-generation",
+      "source": "bankai-skills/superpowers",
+      "skillId": "ai-video-generation",
+      "name": "ai-video-generation",
+      "installs": 370074
+    },
+    {
+      "id": "obra/superpowers/writing-skills",
+      "source": "obra/superpowers",
+      "skillId": "writing-skills",
+      "name": "writing-skills",
+      "installs": 217894
+    },
+    {
+      "id": "101-skills/superpowers/agent-browser",
+      "source": "101-skills/superpowers",
+      "skillId": "agent-browser",
+      "name": "agent-browser",
+      "installs": 161182
+    },
+    {
+      "id": "101-skills/superpowers/web-search",
+      "source": "101-skills/superpowers",
+      "skillId": "web-search",
+      "name": "web-search",
+      "installs": 107688
+    },
+    {
+      "id": "qu-skills/superpowers/agent-browser",
+      "source": "qu-skills/superpowers",
+      "skillId": "agent-browser",
+      "name": "agent-browser",
+      "installs": 101562
+    },
+    {
+      "id": "skills-shell/superpowers/agent-browser",
+      "source": "skills-shell/superpowers",
+      "skillId": "agent-browser",
+      "name": "agent-browser",
+      "installs": 74840
+    },
+    {
+      "id": "its-a-skill-issue/superpowers/agent-browser",
+      "source": "its-a-skill-issue/superpowers",
+      "skillId": "agent-browser",
+      "name": "agent-browser",
+      "installs": 72383
+    },
+    {
+      "id": "bankai-skills/superpowers/agent-browser",
+      "source": "bankai-skills/superpowers",
+      "skillId": "agent-browser",
+      "name": "agent-browser",
+      "installs": 69188
+    },
+    {
+      "id": "qu-skills/superpowers/web-search",
+      "source": "qu-skills/superpowers",
+      "skillId": "web-search",
+      "name": "web-search",
+      "installs": 67565
+    },
+    {
+      "id": "101-skills/superpowers/landing-page-design",
+      "source": "101-skills/superpowers",
+      "skillId": "landing-page-design",
+      "name": "landing-page-design",
+      "installs": 54871
+    },
+    {
+      "id": "101-skills/superpowers/product-photography",
+      "source": "101-skills/superpowers",
+      "skillId": "product-photography",
+      "name": "product-photography",
+      "installs": 54714
+    },
+    {
+      "id": "101-skills/superpowers/app-store-screenshots",
+      "source": "101-skills/superpowers",
+      "skillId": "app-store-screenshots",
+      "name": "app-store-screenshots",
+      "installs": 54408
+    },
+    {
+      "id": "skills-shell/superpowers/web-search",
+      "source": "skills-shell/superpowers",
+      "skillId": "web-search",
+      "name": "web-search",
+      "installs": 50173
+    },
+    {
+      "id": "its-a-skill-issue/superpowers/web-search",
+      "source": "its-a-skill-issue/superpowers",
+      "skillId": "web-search",
+      "name": "web-search",
+      "installs": 48307
+    },
+    {
+      "id": "bankai-skills/superpowers/web-search",
+      "source": "bankai-skills/superpowers",
+      "skillId": "web-search",
+      "name": "web-search",
+      "installs": 46379
+    },
+    {
+      "id": "qu-skills/superpowers/product-photography",
+      "source": "qu-skills/superpowers",
+      "skillId": "product-photography",
+      "name": "product-photography",
+      "installs": 33695
+    },
+    {
+      "id": "qu-skills/superpowers/app-store-screenshots",
+      "source": "qu-skills/superpowers",
+      "skillId": "app-store-screenshots",
+      "name": "app-store-screenshots",
+      "installs": 33368
+    },
+    {
+      "id": "qu-skills/superpowers/landing-page-design",
+      "source": "qu-skills/superpowers",
+      "skillId": "landing-page-design",
+      "name": "landing-page-design",
+      "installs": 33278
+    },
+    {
+      "id": "skills-shell/superpowers/product-photography",
+      "source": "skills-shell/superpowers",
+      "skillId": "product-photography",
+      "name": "product-photography",
+      "installs": 25369
+    },
+    {
+      "id": "skills-shell/superpowers/landing-page-design",
+      "source": "skills-shell/superpowers",
+      "skillId": "landing-page-design",
+      "name": "landing-page-design",
+      "installs": 24897
+    },
+    {
+      "id": "skills-shell/superpowers/app-store-screenshots",
+      "source": "skills-shell/superpowers",
+      "skillId": "app-store-screenshots",
+      "name": "app-store-screenshots",
+      "installs": 24850
+    },
+    {
+      "id": "its-a-skill-issue/superpowers/product-photography",
+      "source": "its-a-skill-issue/superpowers",
+      "skillId": "product-photography",
+      "name": "product-photography",
+      "installs": 24672
+    },
+    {
+      "id": "its-a-skill-issue/superpowers/landing-page-design",
+      "source": "its-a-skill-issue/superpowers",
+      "skillId": "landing-page-design",
+      "name": "landing-page-design",
+      "installs": 24360
+    },
+    {
+      "id": "its-a-skill-issue/superpowers/app-store-screenshots",
+      "source": "its-a-skill-issue/superpowers",
+      "skillId": "app-store-screenshots",
+      "name": "app-store-screenshots",
+      "installs": 24343
+    },
+    {
+      "id": "bankai-skills/superpowers/product-photography",
+      "source": "bankai-skills/superpowers",
+      "skillId": "product-photography",
+      "name": "product-photography",
+      "installs": 23370
+    },
+    {
+      "id": "bankai-skills/superpowers/app-store-screenshots",
+      "source": "bankai-skills/superpowers",
+      "skillId": "app-store-screenshots",
+      "name": "app-store-screenshots",
+      "installs": 23210
+    },
+    {
+      "id": "bankai-skills/superpowers/landing-page-design",
+      "source": "bankai-skills/superpowers",
+      "skillId": "landing-page-design",
+      "name": "landing-page-design",
+      "installs": 23097
+    },
+    {
+      "id": "101-skills/superpowers/gpt-image",
+      "source": "101-skills/superpowers",
+      "skillId": "gpt-image",
+      "name": "gpt-image",
+      "installs": 12187
+    },
+    {
+      "id": "101-skills/superpowers/seedance",
+      "source": "101-skills/superpowers",
+      "skillId": "seedance",
+      "name": "seedance",
+      "installs": 12090
+    },
+    {
+      "id": "qu-skills/superpowers/seedance",
+      "source": "qu-skills/superpowers",
+      "skillId": "seedance",
+      "name": "seedance",
+      "installs": 7428
+    },
+    {
+      "id": "qu-skills/superpowers/gpt-image",
+      "source": "qu-skills/superpowers",
+      "skillId": "gpt-image",
+      "name": "gpt-image",
+      "installs": 7318
+    },
+    {
+      "id": "skills-shell/superpowers/seedance",
+      "source": "skills-shell/superpowers",
+      "skillId": "seedance",
+      "name": "seedance",
+      "installs": 5327
+    },
+    {
+      "id": "skills-shell/superpowers/gpt-image",
+      "source": "skills-shell/superpowers",
+      "skillId": "gpt-image",
+      "name": "gpt-image",
+      "installs": 5313
+    },
+    {
+      "id": "its-a-skill-issue/superpowers/seedance",
+      "source": "its-a-skill-issue/superpowers",
+      "skillId": "seedance",
+      "name": "seedance",
+      "installs": 5022
+    },
+    {
+      "id": "its-a-skill-issue/superpowers/gpt-image",
+      "source": "its-a-skill-issue/superpowers",
+      "skillId": "gpt-image",
+      "name": "gpt-image",
+      "installs": 4970
+    },
+    {
+      "id": "bankai-skills/superpowers/seedance",
+      "source": "bankai-skills/superpowers",
+      "skillId": "seedance",
+      "name": "seedance",
+      "installs": 4498
+    },
+    {
+      "id": "bankai-skills/superpowers/gpt-image",
+      "source": "bankai-skills/superpowers",
+      "skillId": "gpt-image",
+      "name": "gpt-image",
+      "installs": 4479
+    },
+    {
+      "id": "jnmetacode/superpowers-zh/writing-skills",
+      "source": "jnmetacode/superpowers-zh",
+      "skillId": "writing-skills",
+      "name": "writing-skills",
+      "installs": 955
+    },
+    {
+      "id": "obra/superpowers-skills/getting-started-with-skills",
+      "source": "obra/superpowers-skills",
+      "skillId": "getting-started-with-skills",
+      "name": "Getting Started with Skills",
+      "installs": 943
+    },
+    {
+      "id": "obra/superpowers-skills/collision-zone-thinking",
+      "source": "obra/superpowers-skills",
+      "skillId": "collision-zone-thinking",
+      "name": "Collision-Zone Thinking",
+      "installs": 574
+    },
+    {
+      "id": "obra/superpowers-skills/test-driven-development-tdd",
+      "source": "obra/superpowers-skills",
+      "skillId": "test-driven-development-tdd",
+      "name": "Test-Driven Development (TDD)",
+      "installs": 557
+    },
+    {
+      "id": "obra/superpowers-skills/subagent-driven-development",
+      "source": "obra/superpowers-skills",
+      "skillId": "subagent-driven-development",
+      "name": "Subagent-Driven Development",
+      "installs": 519
+    },
+    {
+      "id": "obra/superpowers-skills/when-stuck-problem-solving-dispatch",
+      "source": "obra/superpowers-skills",
+      "skillId": "when-stuck-problem-solving-dispatch",
+      "name": "When Stuck - Problem-Solving Dispatch",
+      "installs": 517
+    },
+    {
+      "id": "obra/superpowers-skills/executing-plans",
+      "source": "obra/superpowers-skills",
+      "skillId": "executing-plans",
+      "name": "Executing Plans",
+      "installs": 517
+    },
+    {
+      "id": "obra/superpowers-skills/code-review-reception",
+      "source": "obra/superpowers-skills",
+      "skillId": "code-review-reception",
+      "name": "Code Review Reception",
+      "installs": 514
+    },
+    {
+      "id": "obra/superpowers-skills/simplification-cascades",
+      "source": "obra/superpowers-skills",
+      "skillId": "simplification-cascades",
+      "name": "Simplification Cascades",
+      "installs": 512
+    },
+    {
+      "id": "obra/superpowers-skills/using-git-worktrees",
+      "source": "obra/superpowers-skills",
+      "skillId": "using-git-worktrees",
+      "name": "Using Git Worktrees",
+      "installs": 510
+    },
+    {
+      "id": "obra/superpowers-skills/tracing-knowledge-lineages",
+      "source": "obra/superpowers-skills",
+      "skillId": "tracing-knowledge-lineages",
+      "name": "Tracing Knowledge Lineages",
+      "installs": 509
+    },
+    {
+      "id": "obra/superpowers-skills/meta-pattern-recognition",
+      "source": "obra/superpowers-skills",
+      "skillId": "meta-pattern-recognition",
+      "name": "Meta-Pattern Recognition",
+      "installs": 508
+    },
+    {
+      "id": "obra/superpowers-skills/inversion-exercise",
+      "source": "obra/superpowers-skills",
+      "skillId": "inversion-exercise",
+      "name": "Inversion Exercise",
+      "installs": 508
+    },
+    {
+      "id": "obra/superpowers-skills/finishing-a-development-branch",
+      "source": "obra/superpowers-skills",
+      "skillId": "finishing-a-development-branch",
+      "name": "Finishing a Development Branch",
+      "installs": 506
+    },
+    {
+      "id": "obra/superpowers-skills/remembering-conversations",
+      "source": "obra/superpowers-skills",
+      "skillId": "remembering-conversations",
+      "name": "Remembering Conversations",
+      "installs": 505
+    },
+    {
+      "id": "obra/superpowers-skills/scale-game",
+      "source": "obra/superpowers-skills",
+      "skillId": "scale-game",
+      "name": "Scale Game",
+      "installs": 504
+    },
+    {
+      "id": "obra/superpowers-skills/preserving-productive-tensions",
+      "source": "obra/superpowers-skills",
+      "skillId": "preserving-productive-tensions",
+      "name": "Preserving Productive Tensions",
+      "installs": 496
+    },
+    {
+      "id": "obra/superpowers-skills/gardening-skills-wiki",
+      "source": "obra/superpowers-skills",
+      "skillId": "gardening-skills-wiki",
+      "name": "Gardening Skills Wiki",
+      "installs": 495
+    },
+    {
+      "id": "obra/superpowers-skills/pulling-updates-from-skills-repository",
+      "source": "obra/superpowers-skills",
+      "skillId": "pulling-updates-from-skills-repository",
+      "name": "Pulling Updates from Skills Repository",
+      "installs": 493
+    },
+    {
+      "id": "skills-101/superpowers/ai-video-generation",
+      "source": "skills-101/superpowers",
+      "skillId": "ai-video-generation",
+      "name": "ai-video-generation",
+      "installs": 13
+    },
+    {
+      "id": "skills-101/superpowers/agent-browser",
+      "source": "skills-101/superpowers",
+      "skillId": "agent-browser",
+      "name": "agent-browser",
+      "installs": 11
+    },
+    {
+      "id": "skills-101/superpowers/web-search",
+      "source": "skills-101/superpowers",
+      "skillId": "web-search",
+      "name": "web-search",
+      "installs": 11
+    },
+    {
+      "id": "skills-101/superpowers/landing-page-design",
+      "source": "skills-101/superpowers",
+      "skillId": "landing-page-design",
+      "name": "landing-page-design",
+      "installs": 10
+    },
+    {
+      "id": "skills-101/superpowers/app-store-screenshots",
+      "source": "skills-101/superpowers",
+      "skillId": "app-store-screenshots",
+      "name": "app-store-screenshots",
+      "installs": 10
+    },
+    {
+      "id": "skills-101/superpowers/product-photography",
+      "source": "skills-101/superpowers",
+      "skillId": "product-photography",
+      "name": "product-photography",
+      "installs": 10
+    },
+    {
+      "id": "skills-101/superpowers/seedance",
+      "source": "skills-101/superpowers",
+      "skillId": "seedance",
+      "name": "seedance",
+      "installs": 8
+    },
+    {
+      "id": "skills-101/superpowers/gpt-image",
+      "source": "skills-101/superpowers",
+      "skillId": "gpt-image",
+      "name": "gpt-image",
+      "installs": 8
+    },
+    {
+      "id": "101-skills/superpowers/twitter-automation",
+      "source": "101-skills/superpowers",
+      "skillId": "twitter-automation",
+      "name": "twitter-automation",
+      "installs": 853550
+    },
+    {
+      "id": "101-skills/superpowers/ai-image-generation",
+      "source": "101-skills/superpowers",
+      "skillId": "ai-image-generation",
+      "name": "ai-image-generation",
+      "installs": 852672
+    },
+    {
+      "id": "101-skills/superpowers/ai-avatar-video",
+      "source": "101-skills/superpowers",
+      "skillId": "ai-avatar-video",
+      "name": "ai-avatar-video",
+      "installs": 852122
+    },
+    {
+      "id": "qu-skills/superpowers/twitter-automation",
+      "source": "qu-skills/superpowers",
+      "skillId": "twitter-automation",
+      "name": "twitter-automation",
+      "installs": 537656
+    },
+    {
+      "id": "qu-skills/superpowers/ai-avatar-video",
+      "source": "qu-skills/superpowers",
+      "skillId": "ai-avatar-video",
+      "name": "ai-avatar-video",
+      "installs": 536753
+    },
+    {
+      "id": "qu-skills/superpowers/ai-image-generation",
+      "source": "qu-skills/superpowers",
+      "skillId": "ai-image-generation",
+      "name": "ai-image-generation",
+      "installs": 536332
+    },
+    {
+      "id": "skills-shell/superpowers/twitter-automation",
+      "source": "skills-shell/superpowers",
+      "skillId": "twitter-automation",
+      "name": "twitter-automation",
+      "installs": 400691
+    },
+    {
+      "id": "skills-shell/superpowers/ai-image-generation",
+      "source": "skills-shell/superpowers",
+      "skillId": "ai-image-generation",
+      "name": "ai-image-generation",
+      "installs": 398412
+    },
+    {
+      "id": "skills-shell/superpowers/ai-avatar-video",
+      "source": "skills-shell/superpowers",
+      "skillId": "ai-avatar-video",
+      "name": "ai-avatar-video",
+      "installs": 397920
+    },
+    {
+      "id": "its-a-skill-issue/superpowers/twitter-automation",
+      "source": "its-a-skill-issue/superpowers",
+      "skillId": "twitter-automation",
+      "name": "twitter-automation",
+      "installs": 386329
+    },
+    {
+      "id": "its-a-skill-issue/superpowers/ai-image-generation",
+      "source": "its-a-skill-issue/superpowers",
+      "skillId": "ai-image-generation",
+      "name": "ai-image-generation",
+      "installs": 385289
+    },
+    {
+      "id": "its-a-skill-issue/superpowers/ai-avatar-video",
+      "source": "its-a-skill-issue/superpowers",
+      "skillId": "ai-avatar-video",
+      "name": "ai-avatar-video",
+      "installs": 385024
+    },
+    {
+      "id": "bankai-skills/superpowers/twitter-automation",
+      "source": "bankai-skills/superpowers",
+      "skillId": "twitter-automation",
+      "name": "twitter-automation",
+      "installs": 371219
+    },
+    {
+      "id": "bankai-skills/superpowers/ai-image-generation",
+      "source": "bankai-skills/superpowers",
+      "skillId": "ai-image-generation",
+      "name": "ai-image-generation",
+      "installs": 370186
+    },
+    {
+      "id": "bankai-skills/superpowers/ai-avatar-video",
+      "source": "bankai-skills/superpowers",
+      "skillId": "ai-avatar-video",
+      "name": "ai-avatar-video",
+      "installs": 369997
+    },
+    {
+      "id": "101-skills/superpowers/remotion-render",
+      "source": "101-skills/superpowers",
+      "skillId": "remotion-render",
+      "name": "remotion-render",
+      "installs": 107707
+    },
+    {
+      "id": "101-skills/superpowers/python-executor",
+      "source": "101-skills/superpowers",
+      "skillId": "python-executor",
+      "name": "python-executor",
+      "installs": 107662
+    },
+    {
+      "id": "101-skills/superpowers/agent-tools",
+      "source": "101-skills/superpowers",
+      "skillId": "agent-tools",
+      "name": "agent-tools",
+      "installs": 107386
+    },
+    {
+      "id": "101-skills/superpowers/infsh-cli",
+      "source": "101-skills/superpowers",
+      "skillId": "infsh-cli",
+      "name": "infsh-cli",
+      "installs": 107148
+    },
+    {
+      "id": "qu-skills/superpowers/remotion-render",
+      "source": "qu-skills/superpowers",
+      "skillId": "remotion-render",
+      "name": "remotion-render",
+      "installs": 67882
+    },
+    {
+      "id": "qu-skills/superpowers/python-executor",
+      "source": "qu-skills/superpowers",
+      "skillId": "python-executor",
+      "name": "python-executor",
+      "installs": 67839
+    },
+    {
+      "id": "qu-skills/superpowers/agent-tools",
+      "source": "qu-skills/superpowers",
+      "skillId": "agent-tools",
+      "name": "agent-tools",
+      "installs": 67653
+    },
+    {
+      "id": "qu-skills/superpowers/infsh-cli",
+      "source": "qu-skills/superpowers",
+      "skillId": "infsh-cli",
+      "name": "infsh-cli",
+      "installs": 67425
+    },
+    {
+      "id": "101-skills/superpowers/storyboard-creation",
+      "source": "101-skills/superpowers",
+      "skillId": "storyboard-creation",
+      "name": "storyboard-creation",
+      "installs": 54514
+    }
+  ]
+}

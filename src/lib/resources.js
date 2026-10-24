@@ -59,12 +59,18 @@ function pickIndex(raw, count) {
   return index < count ? index : null;
 }
 
-function skillKey(name) {
+/** Name to search for: no bracketed credits, no trailing "skill" word. */
+function searchName(name) {
   return String(name || '')
+    .replace(/\([^)]*\)/g, ' ')
     .trim()
-    .toLowerCase()
-    .replace(/\s+skills?$/, '')
-    .replace(/[\s_]+/g, '-');
+    .replace(/\s+skills?$/i, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function skillKey(name) {
+  return searchName(name).toLowerCase().replace(/[\s_]+/g, '-');
 }
 
 /**
@@ -91,6 +97,50 @@ function matchSkill(results, name) {
     }
   }
   return best && { name: best.name, url: best.url };
+}
+
+const REPO_LINK = /^https?:\/\/(?:www\.)?(?:github\.com|skills\.sh)\/([\w.-]+)\/([\w.-]+)/i;
+
+/** @returns {string} 'owner/repo' of a GitHub or skills.sh link, or '' */
+function repoOf(url) {
+  const m = REPO_LINK.exec(String(url || ''));
+  return m ? `${m[1]}/${m[2].replace(/\.git$/i, '')}` : '';
+}
+
+/** @returns {number|null} stars from a GitHub repo answer */
+function repoStars(json) {
+  const stars = json?.stargazers_count;
+  return typeof stars === 'number' ? stars : null;
+}
+
+/**
+ * Popularity decides between the skills.sh match and same-named GitHub repos:
+ * the most-starred one wins, so a small copy never beats the original.
+ * Forks and partial names never count. Unknown stars lose to known ones.
+ * @param {{url:string}|null} skillMatch from matchSkill
+ * @param {object|null} pack GitHub answer for the skills.sh match's repo
+ * @param {object[]} items GitHub repository search results
+ * @returns {{url:string, link_from:string, stars:number|null}|null}
+ */
+function chooseLink(skillMatch, pack, items, name) {
+  const wanted = skillKey(name);
+  const repos = (items || []).filter((item) => item && !item.fork && skillKey(item.name) === wanted);
+  const candidates = [];
+  if (skillMatch) {
+    const repo = repoOf(skillMatch.url).toLowerCase();
+    const listed = (items || []).find((item) => String(item.full_name || repoOf(item.html_url)).toLowerCase() === repo);
+    const stars = repoStars(pack) ?? repoStars(listed);
+    candidates.push({ url: skillMatch.url, link_from: 'skills.sh', stars, repo });
+  }
+  for (const item of repos) {
+    if (candidates.some((c) => c.repo === repoOf(item.html_url).toLowerCase())) continue;
+    candidates.push({ url: item.html_url, link_from: 'github', stars: repoStars(item), repo: repoOf(item.html_url).toLowerCase() });
+  }
+  let best = null;
+  for (const c of candidates) {
+    if (!best || (c.stars ?? -1) > (best.stars ?? -1)) best = c;
+  }
+  return best && { url: best.url, link_from: best.link_from, stars: best.stars };
 }
 
 /** Text of an AI answer: Gemini node output or an OpenAI-style (NVIDIA NIM) response. */
@@ -147,4 +197,4 @@ function pickRequest(model, prompt, resource, results) {
   return nimRequest(model, prompt, `${about}\n\nResults:\n${list}`);
 }
 
-module.exports = { parseResources, pickIndex, matchSkill, aiText, isTemporaryError, nimRequest, readerOutcome, linkAlive, pickRequest };
+module.exports = { parseResources, pickIndex, searchName, matchSkill, repoOf, repoStars, chooseLink, aiText, isTemporaryError, nimRequest, readerOutcome, linkAlive, pickRequest };

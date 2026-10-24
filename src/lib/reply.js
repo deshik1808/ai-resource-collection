@@ -77,4 +77,19 @@ function labelFor(kind) {
   return { youtube: 'Short', page: 'link' }[kind] || 'message';
 }
 
-module.exports = { ICONS, formatSummary, findRows, formatFind, holdNotice, labelFor };
+/** Telegram parses replies as HTML, so &, < and > must be escaped. */
+function escapeHtml(text) {
+  return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/** One reply for a whole message from every job's {saved, skipped, notices, label}. Quiet runs with nothing to say return ''. */
+function combineReply(results, planNotices, quiet) {
+  const saved = results.flatMap((r) => r.saved || []);
+  const skipped = results.flatMap((r) => r.skipped || []);
+  const notices = [...planNotices, ...results.flatMap((r) => r.notices || [])].filter(Boolean);
+  if (quiet && saved.length === 0 && skipped.length === 0 && notices.length === 0) return '';
+  const labels = [...new Set(results.map((r) => r.label).filter(Boolean))];
+  return formatSummary(saved, skipped, notices, labels.length === 1 ? labels[0] : 'message');
+}
+
+module.exports = { ICONS, formatSummary, findRows, formatFind, holdNotice, labelFor, escapeHtml, combineReply };

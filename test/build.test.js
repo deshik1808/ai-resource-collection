@@ -64,3 +64,25 @@ test('comment-only lines are dropped from included code', () => {
   const dir = tempSrc({ 'a.js': '// header\n/**\n * Doc.\n * @param {string} x\n */\nfunction x(){} // keep inline\n/** one line */\nconst y = 1;\n' });
   assert.strictEqual(build("__INCLUDE__('a.js')", dir), JSON.stringify('function x(){} // keep inline\nconst y = 1;'));
 });
+
+test('inlined libs work in a sandbox without the URL global (like n8n Code nodes)', () => {
+  const src = path.join(__dirname, '..', 'src');
+  const code = JSON.parse(build("__INCLUDE__('lib/input.js', 'lib/reply.js', 'lib/sheet.js', 'lib/resources.js')", src, {}));
+  const run = new Function('URL', '$input', '$', code + `
+    return {
+      short: normalizeUrl('https://youtube.com/shorts/abc123?si=XyZ'),
+      yt: isYouTube('https://youtu.be/abc123'),
+      gh: normalizeUrl('https://GitHub.com/obra/superpowers/?utm_source=x#readme'),
+      root: normalizeUrl('https://b.com'),
+      domain: domainOf('https://www.github.com/x'),
+      link: parseResources('{"resources":[{"name":"A","category":"Tool","link_in_source":"https://a.com/x"}]}').resources[0].link_in_source,
+    };`);
+  assert.deepStrictEqual(run(undefined), {
+    short: 'https://www.youtube.com/watch?v=abc123',
+    yt: true,
+    gh: 'https://github.com/obra/superpowers',
+    root: 'https://b.com/',
+    domain: 'github.com',
+    link: 'https://a.com/x',
+  });
+});

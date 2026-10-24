@@ -5,12 +5,7 @@ const CATEGORIES = ['Skill', 'Tool', 'Prompt', 'Website'];
 const DESCRIPTION_MAX = 200;
 
 function isHttpUrl(value) {
-  try {
-    const url = new URL(String(value));
-    return url.protocol === 'http:' || url.protocol === 'https:';
-  } catch {
-    return false;
-  }
+  return /^https?:\/\/[^\s/?#]+\.[^\s/?#]+(\S*)$/i.test(String(value || ''));
 }
 
 function normaliseCategory(value) {

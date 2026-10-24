@@ -111,3 +111,34 @@ test('labelFor: reply wording per input kind', () => {
   assert.strictEqual(labelFor('page'), 'link');
   assert.strictEqual(labelFor('text'), 'message');
 });
+
+const { combineReply, escapeHtml } = require('../src/lib/reply');
+
+test('escapeHtml: Telegram HTML special characters', () => {
+  assert.strictEqual(escapeHtml('a < b & c > d'), 'a &lt; b &amp; c &gt; d');
+});
+
+test('combineReply: merges job results and plan notices into one summary', () => {
+  const results = [
+    { saved: [row({ name: 'Taste', category: 'Skill', link_from: 'not found' })], skipped: ['Impeccable'], notices: [], label: 'Short' },
+    { saved: [], skipped: [], notices: ['⏸ Saved for later, will retry'], label: 'Short' },
+  ];
+  const text = combineReply(results, ['Already saved on 2026-09-12'], false);
+  assert.ok(text.startsWith('✅ 2 found in this Short'));
+  assert.ok(text.includes('Impeccable — already saved'));
+  assert.ok(text.includes('Already saved on 2026-09-12'));
+  assert.ok(text.includes('⏸ Saved for later, will retry'));
+});
+
+test('combineReply: mixed kinds say "message"', () => {
+  const results = [
+    { saved: [row({ name: 'A' })], skipped: [], notices: [], label: 'Short' },
+    { saved: [row({ name: 'B' })], skipped: [], notices: [], label: 'link' },
+  ];
+  assert.ok(combineReply(results, [], false).startsWith('✅ 2 found in this message'));
+});
+
+test('combineReply: a quiet retry with nothing new sends nothing', () => {
+  assert.strictEqual(combineReply([{ saved: [], skipped: [], notices: [], label: 'Short' }], [], true), '');
+  assert.strictEqual(combineReply([{ saved: [], skipped: [], notices: [], label: 'Short' }], [], false), 'Nothing found in this one');
+});

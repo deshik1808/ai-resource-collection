@@ -1,0 +1,37 @@
+{
+  "query": "NotebookLM Google AI notebook official site",
+  "answer": null,
+  "results": [
+    {
+      "url": "https://finance.yahoo.com/news/zillow-google-bring-home-buying-235700974.html",
+      "title": "Zillow and Google bring home-buying guidance to NotebookLM",
+      "content": "Zillow is partnering with Google NotebookLM to make Zillow's home-buying guidance available in a featured notebook.",
+      "score": 0.7489592
+    },
+    {
+      "url": "https://sites.google.com/view/notebook-lm",
+      "title": "Google Notebook LM",
+      "content": "A Google Sites Wiki Project. NotebookLM is an AI-powered research and content organization tool by Google.",
+      "score": 0.74363416
+    },
+    {
+      "url": "https://www.stocktitan.net/news/Z/zillow-and-google-bring-home-buying-guidance-to-notebook-rqe5gfwotum0.html",
+      "title": "Zillow brings home-buying advice to Google NotebookLM | Z Stock News",
+      "content": "Zillow is partnering with Google NotebookLM.",
+      "score": 0.7251239
+    },
+    {
+      "url": "https://workspace.google.com/products/gemini-notebook",
+      "title": "Gemini Notebook (formerly NotebookLM): AI research and learning assistant tool | Google Workspace",
+      "content": "Yes, NotebookLM is now Gemini Notebook. It remains your go-to AI-powered research and learning assistant.",
+      "score": 0.6852132
+    },
+    {
+      "url": "https://finance.yahoo.com/news/google-debuts-notebooklm-enterprises-153000703.html",
+      "title": "Google debuts NotebookLM for enterprises",
+      "content": "NotebookLM is one of Google's most popular AI-powered products in recent memory.",
+      "score": 0.6202772
+    }
+  ],
+  "response_time": 1.62
+}

@@ -148,9 +148,9 @@ function chooseLink(skillMatch, pack, items, name) {
   return best && { url: best.url, link_from: best.link_from, stars: best.stars, about: best.about };
 }
 
-/** Text of an AI answer: Gemini node output or an OpenAI-style (NVIDIA NIM) response. */
+/** Text of an AI answer: Gemini API or node output, or an OpenAI-style (NVIDIA NIM) response. */
 function aiText(json) {
-  const parts = json?.content?.parts;
+  const parts = json?.content?.parts || json?.candidates?.[0]?.content?.parts;
   if (Array.isArray(parts)) return parts.map((p) => p.text || '').join('');
   return json?.choices?.[0]?.message?.content || '';
 }
@@ -172,6 +172,17 @@ function nimRequest(model, prompt, content) {
     messages: [{ role: 'user', content: `${prompt}\n${content}` }],
     temperature: 0.2,
     max_tokens: 16384,
+  };
+}
+
+/**
+ * Gemini API body that lets Google fetch the YouTube video itself. Downloading
+ * it from our server only gets YouTube's "not a bot" page, never the video.
+ */
+function watchRequest(videoUrl, prompt) {
+  return {
+    contents: [{ parts: [{ file_data: { file_uri: videoUrl } }, { text: prompt }] }],
+    generationConfig: { maxOutputTokens: 8192 },
   };
 }
 
@@ -202,4 +213,4 @@ function pickRequest(model, prompt, resource, results) {
   return nimRequest(model, prompt, `${about}\n\nResults:\n${list}`);
 }
 
-module.exports = { parseResources, pickIndex, searchName, matchSkill, repoOf, repoStars, repoAbout, chooseLink, aiText, isTemporaryError, nimRequest, readerOutcome, linkAlive, pickRequest };
+module.exports = { parseResources, pickIndex, searchName, matchSkill, repoOf, repoStars, repoAbout, chooseLink, aiText, isTemporaryError, nimRequest, watchRequest, readerOutcome, linkAlive, pickRequest };

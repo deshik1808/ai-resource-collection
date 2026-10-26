@@ -265,3 +265,16 @@ test('repoAbout: GitHub description, trimmed to 200 characters, empty when missi
   assert.strictEqual(repoAbout({ description: null }), '');
   assert.strictEqual(repoAbout(undefined), '');
 });
+
+const { watchRequest } = require('../src/lib/resources');
+
+test('watchRequest: Google fetches the YouTube video itself (file_data), prompt after it', () => {
+  assert.deepStrictEqual(watchRequest('https://www.youtube.com/watch?v=VbTsFtwjl1k', 'PROMPT'), {
+    contents: [{ parts: [{ file_data: { file_uri: 'https://www.youtube.com/watch?v=VbTsFtwjl1k' } }, { text: 'PROMPT' }] }],
+    generationConfig: { maxOutputTokens: 8192 },
+  });
+});
+
+test('aiText: reads a raw Gemini API answer (candidates)', () => {
+  assert.strictEqual(aiText({ candidates: [{ content: { parts: [{ text: '{"resources"' }, { text: ':[]}' }] } }] }), '{"resources":[]}');
+});

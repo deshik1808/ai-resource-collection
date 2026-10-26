@@ -61,29 +61,30 @@ const buildWatch = node({
   version: 2,
   config: {
     name: 'Build Watch',
-    parameters: { mode: 'runOnceForAllItems', jsCode: __INCLUDE__('adapters/job-build-watch.js') },
-    output: [{ job: { kind: 'youtube', source_url: 'https://www.youtube.com/watch?v=a' }, prompt: 'p' }],
+    parameters: { mode: 'runOnceForAllItems', jsCode: __INCLUDE__('lib/resources.js', 'adapters/job-build-watch.js') },
+    output: [{ job: { kind: 'youtube', source_url: 'https://www.youtube.com/watch?v=a' }, body: { contents: [] } }],
   },
 });
 
 const watch = node({
-  type: '@n8n/n8n-nodes-langchain.googleGemini',
-  version: 1.2,
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.5,
   config: {
     name: 'Watch',
     onError: 'continueErrorOutput',
     parameters: {
-      resource: 'video',
-      operation: 'analyze',
-      modelId: { __rl: true, mode: 'id', value: __ID__('gemini_model') },
-      text: expr('{{ $json.prompt }}'),
-      inputType: 'url',
-      videoUrls: expr('{{ $json.job.source_url }}'),
-      simplify: true,
-      options: { maxOutputTokens: 8192 },
+      method: 'POST',
+      url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+      authentication: 'predefinedCredentialType',
+      nodeCredentialType: 'googlePalmApi',
+      sendBody: true,
+      contentType: 'json',
+      specifyBody: 'json',
+      jsonBody: expr('{{ JSON.stringify($json.body) }}'),
+      options: { timeout: 180000 },
     },
     credentials: { googlePalmApi: { id: 'GzWPqEIKL3sEzEJR', name: 'Google Gemini(PaLM) Api account' } },
-    output: [{ content: { parts: [{ text: '{"resources":[]}' }] } }],
+    output: [{ candidates: [{ content: { parts: [{ text: '{"resources":[]}' }] } }] }],
   },
 });
 

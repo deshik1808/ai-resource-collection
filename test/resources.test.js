@@ -278,3 +278,35 @@ test('watchRequest: Google fetches the YouTube video itself (file_data), prompt 
 test('aiText: reads a raw Gemini API answer (candidates)', () => {
   assert.strictEqual(aiText({ candidates: [{ content: { parts: [{ text: '{"resources"' }, { text: ':[]}' }] } }] }), '{"resources":[]}');
 });
+
+test('readerOutcome: a page job links the page\'s real address when known (share.google → GitHub)', () => {
+  const out = readerOutcome(job({ kind: 'page', source_url: 'https://share.google/Q9Uaf7VMJ8B50i7xS' }),
+    '{"resources":[{"name":"REA","category":"Tool"}]}', 'https://github.com/morluto/rea');
+  assert.strictEqual(out.resources[0].link_in_source, 'https://github.com/morluto/rea');
+  const plain = readerOutcome(job({ kind: 'page', source_url: 'https://a.com/x' }), '{"resources":[{"name":"A","category":"Tool"}]}', '');
+  assert.strictEqual(plain.resources[0].link_in_source, 'https://a.com/x');
+});
+
+const { pickCandidates } = require('../src/lib/resources');
+
+test('pickCandidates: web results plus same-named GitHub repos (no forks), labelled with stars and description', () => {
+  const web = [{ title: 'Strix Review', url: 'https://blog.example/strix', content: 'a review' }];
+  const repos = [
+    { name: 'strix', full_name: 'usestrix/strix', html_url: 'https://github.com/usestrix/strix', fork: false, stargazers_count: 20000, description: 'Open-source AI hackers for your apps' },
+    { name: 'strix', full_name: 'someone/strix', html_url: 'https://github.com/someone/strix', fork: true, stargazers_count: 50, description: 'fork' },
+    { name: 'strix-ui', full_name: 'x/strix-ui', html_url: 'https://github.com/x/strix-ui', fork: false, stargazers_count: 900, description: 'other' },
+  ];
+  assert.deepStrictEqual(pickCandidates(web, repos, 'Strix'), [
+    web[0],
+    { title: 'GitHub repository usestrix/strix (⭐ 20000)', url: 'https://github.com/usestrix/strix', content: 'Open-source AI hackers for your apps' },
+  ]);
+});
+
+test('pickCandidates: at most 5 web results and 3 repos; nothing when both are empty', () => {
+  const web = Array.from({ length: 7 }, (_, i) => ({ title: `w${i}`, url: `https://w${i}.example`, content: '' }));
+  const repos = Array.from({ length: 5 }, (_, i) => ({ name: 'gamma', html_url: `https://github.com/o${i}/gamma`, fork: false, stargazers_count: 10 - i, description: null }));
+  const out = pickCandidates(web, repos, 'Gamma');
+  assert.strictEqual(out.length, 8);
+  assert.strictEqual(out[7].content, '');
+  assert.deepStrictEqual(pickCandidates(undefined, undefined, 'x'), []);
+});

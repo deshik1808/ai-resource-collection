@@ -85,3 +85,15 @@ test('domainOf: host without www', () => {
   assert.strictEqual(domainOf('https://www.github.com/obra/superpowers'), 'github.com');
   assert.strictEqual(domainOf('not a url'), '');
 });
+
+const { canonicalUrl } = require('../src/lib/input');
+
+test('canonicalUrl: the page\'s own address from og:url or rel=canonical, either attribute order', () => {
+  assert.strictEqual(canonicalUrl('<head><meta property="og:url" content="https://github.com/morluto/rea" /></head>'), 'https://github.com/morluto/rea');
+  assert.strictEqual(canonicalUrl("<meta content='https://github.com/a/b' property='og:url'>"), 'https://github.com/a/b');
+  assert.strictEqual(canonicalUrl('<link rel="canonical" href="https://example.com/tool">'), 'https://example.com/tool');
+  assert.strictEqual(canonicalUrl('<link href="https://example.com/x" rel="canonical">'), 'https://example.com/x');
+  assert.strictEqual(canonicalUrl('<meta property="og:url" content="/relative">'), '');
+  assert.strictEqual(canonicalUrl('<p>no tags</p>'), '');
+  assert.strictEqual(canonicalUrl(undefined), '');
+});

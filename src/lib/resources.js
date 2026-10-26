@@ -187,12 +187,12 @@ function watchRequest(videoUrl, prompt) {
 }
 
 /** What a reader's answer means for this job: resources to save, or a reason to hold it. */
-function readerOutcome(job, raw) {
+function readerOutcome(job, raw, pageUrl) {
   const parsed = parseResources(raw);
   if (!parsed.ok) return { hold: { temporary: false, empty: false } };
   if (parsed.resources.length === 0) return { hold: { temporary: false, empty: true } };
   if (job.kind === 'page') {
-    return { resources: [{ ...parsed.resources[0], link_in_source: job.source_url }] };
+    return { resources: [{ ...parsed.resources[0], link_in_source: pageUrl || job.source_url }] };
   }
   return { resources: parsed.resources };
 }
@@ -204,6 +204,24 @@ function linkAlive(response) {
   return code !== 404 && code !== 410;
 }
 
+/**
+ * Choices for the link picker: the top web results plus same-named GitHub
+ * repos (never forks), so an open-source tool's repo can be picked even when
+ * the web results are only articles about it.
+ */
+function pickCandidates(webResults, repoItems, name) {
+  const wanted = skillKey(name);
+  const repos = (repoItems || [])
+    .filter((item) => item && !item.fork && skillKey(item.name) === wanted)
+    .slice(0, 3)
+    .map((item) => ({
+      title: `GitHub repository ${item.full_name || repoOf(item.html_url)} (⭐ ${item.stargazers_count ?? '?'})`,
+      url: item.html_url,
+      content: trimmed(item.description),
+    }));
+  return [...(webResults || []).slice(0, 5), ...repos];
+}
+
 /** NIM request asking which numbered search result is the resource's official page. */
 function pickRequest(model, prompt, resource, results) {
   const about = `${resource.name} (${resource.category})${resource.description ? `: ${resource.description}` : ''}`;
@@ -213,4 +231,4 @@ function pickRequest(model, prompt, resource, results) {
   return nimRequest(model, prompt, `${about}\n\nResults:\n${list}`);
 }
 
-module.exports = { parseResources, pickIndex, searchName, matchSkill, repoOf, repoStars, repoAbout, chooseLink, aiText, isTemporaryError, nimRequest, watchRequest, readerOutcome, linkAlive, pickRequest };
+module.exports = { parseResources, pickIndex, searchName, matchSkill, repoOf, repoStars, repoAbout, chooseLink, aiText, isTemporaryError, nimRequest, watchRequest, readerOutcome, linkAlive, pickCandidates, pickRequest };

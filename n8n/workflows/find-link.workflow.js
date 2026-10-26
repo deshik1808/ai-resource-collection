@@ -91,6 +91,23 @@ const githubSearch = node({
   },
 });
 
+const toolRepos = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.5,
+  config: {
+    name: 'Tool Repos',
+    onError: 'continueRegularOutput',
+    parameters: {
+      method: 'GET',
+      url: expr('https://api.github.com/search/repositories?q={{ encodeURIComponent($("Start").first().json.query + " in:name") }}&sort=stars&order=desc&per_page=10'),
+      sendHeaders: true,
+      headerParameters: GITHUB_HEADERS,
+      options: { response: { response: { fullResponse: true, neverError: true } }, timeout: 10000 },
+    },
+    output: [{ statusCode: 200, headers: {}, body: { items: [] } }],
+  },
+});
+
 const hasPack = ifElse({
   version: 2.2,
   config: {
@@ -333,7 +350,7 @@ export default workflow('ai-basket-find-link', 'AI Basket – Find Link')
     .onCase(0, checkInput)
     .onCase(1, promptResult)
     .onCase(2, skillsSearch.to(matchSkillNode.to(githubSearch.to(hasPack.onTrue(packRepo.to(chooseLinkNode)).onFalse(chooseLinkNode))))))
-    .onCase(3, tavily))
+    .onCase(3, toolRepos.to(tavily)))
   .add(chooseLinkNode)
   .to(isMatched.onTrue(checkInput).onFalse(tavily))
   .add(tavily)

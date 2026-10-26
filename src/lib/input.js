@@ -91,10 +91,26 @@ function pageText(html, max) {
     .slice(0, max);
 }
 
+const PAGE_ADDRESS = [
+  /<meta[^>]*property=["']og:url["'][^>]*content=["']([^"']+)["']/i,
+  /<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:url["']/i,
+  /<link[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["']/i,
+  /<link[^>]*href=["']([^"']+)["'][^>]*rel=["']canonical["']/i,
+];
+
+/** @returns {string} the page's own full address (og:url or canonical), so share links resolve to the real page; '' if none */
+function canonicalUrl(html) {
+  for (const pattern of PAGE_ADDRESS) {
+    const m = pattern.exec(String(html || ''));
+    if (m && /^https?:\/\//i.test(m[1])) return m[1];
+  }
+  return '';
+}
+
 /** @param {string} raw @returns {string} host without www, or '' */
 function domainOf(raw) {
   const url = parseUrl(raw);
   return url ? url.host.replace(/^www\./, '') : '';
 }
 
-module.exports = { messageText, splitInput, normalizeUrl, isYouTube, pageText, domainOf };
+module.exports = { messageText, splitInput, normalizeUrl, isYouTube, pageText, canonicalUrl, domainOf };

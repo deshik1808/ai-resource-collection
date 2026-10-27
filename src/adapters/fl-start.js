@@ -5,5 +5,6 @@ let route = 'search';
 if (flResource.link_in_source) route = 'check';
 else if (flResource.category === 'Prompt') route = 'prompt';
 else if (flResource.category === 'Skill') route = 'skill';
+else if (flResource.category === 'Book') route = 'book';
 const linkFrom = flJob.kind === 'page' ? 'shared' : 'source';
 return [{ json: { resource: flResource, job: flJob, route, query: searchName(flResource.name), url: flResource.link_in_source, link_from: linkFrom } }];

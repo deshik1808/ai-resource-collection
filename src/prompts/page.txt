@@ -5,7 +5,7 @@ Reply with JSON only, no other text, in exactly this shape:
 
 Rules:
 - name: the resource's own name as its creator writes it.
-- category: exactly one of Skill, Tool, Prompt, Website. Skill = an agent/Claude skill, plugin or skill pack. Tool = an app, product, model, library or service. Prompt = a single reusable prompt. Website = a site that is itself the resource (a directory, a blog, a course).
+- category: exactly one of Skill, Tool, Prompt, Website, Book. Skill = an agent/Claude skill, plugin or skill pack. Tool = an app, product, model, library or service. Prompt = a single reusable prompt. Website = a site that is itself the resource (a directory, a blog, a course). Book = a book; name = its title with the author in brackets if known.
 - description: English. One or two short sentences: what it is and what it is for. At most 200 characters.
 - link_in_source: always "" (the saved link is used).
 - prompt_text: the full prompt only if the page is a single prompt, otherwise "".

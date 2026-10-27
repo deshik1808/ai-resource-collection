@@ -1,6 +1,6 @@
 // Telegram texts: the summary after saving, and /find results.
 
-const ICONS = { Skill: '🧩', Tool: '🔧', Prompt: '💬', Website: '🌐' };
+const ICONS = { Skill: '🧩', Tool: '🔧', Prompt: '💬', Website: '🌐', Book: '📚' };
 const TELEGRAM_LIMIT = 4096;
 const PREVIEW_CHARS = 100;
 const FIND_LIMIT = 10;
@@ -77,7 +77,8 @@ function formatFind(query, result) {
 }
 
 /** Reply line for an input that was held instead of saved. */
-function holdNotice({ status, kind, empty }) {
+function holdNotice({ status, kind, empty, topic }) {
+  if (empty && topic) return `Nothing to save: no AI resources or books in this one. It is about: ${topic}`;
   if (empty) return 'Nothing found in this one';
   if (status === 'pending') return '⏸ Saved for later, will retry';
   return kind === 'youtube'

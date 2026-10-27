@@ -10,7 +10,7 @@ function row(fields) {
 }
 
 test('ICONS: one icon per category', () => {
-  assert.deepStrictEqual(ICONS, { Skill: '🧩', Tool: '🔧', Prompt: '💬', Website: '🌐' });
+  assert.deepStrictEqual(ICONS, { Skill: '🧩', Tool: '🔧', Prompt: '💬', Website: '🌐', Book: '📚' });
 });
 
 test('formatSummary: spec example lines, with full tappable links', () => {
@@ -163,4 +163,10 @@ test('formatSummary and formatFind show stars after the link', () => {
   assert.strictEqual(formatFind('x', { rows: [r], more: 0 }), '🧩 superpowers — https://github.com/obra/superpowers ⭐ 305k');
   const copy = { ...r, link: 'https://github.com/101-skills/superpowers', stars: 11 };
   assert.ok(formatSummary([copy], [], [], 'Short').endsWith('⭐ 11 ⚠️ low stars, check'));
+});
+
+test('holdNotice: an empty Short says what it was about', () => {
+  assert.strictEqual(holdNotice({ status: 'check', kind: 'youtube', empty: true, topic: 'Motivation talk about discipline' }),
+    'Nothing to save: no AI resources or books in this one. It is about: Motivation talk about discipline');
+  assert.strictEqual(holdNotice({ status: 'check', kind: 'youtube', empty: true, topic: '' }), 'Nothing found in this one');
 });

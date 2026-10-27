@@ -30,6 +30,7 @@ const route = switchCase({
           { outputKey: 'check', conditions: { options: { caseSensitive: true, leftValue: '', typeValidation: 'strict' }, conditions: [{ leftValue: expr('{{ $json.route }}'), operator: { type: 'string', operation: 'equals' }, rightValue: 'check' }], combinator: 'and' } },
           { outputKey: 'prompt', conditions: { options: { caseSensitive: true, leftValue: '', typeValidation: 'strict' }, conditions: [{ leftValue: expr('{{ $json.route }}'), operator: { type: 'string', operation: 'equals' }, rightValue: 'prompt' }], combinator: 'and' } },
           { outputKey: 'skill', conditions: { options: { caseSensitive: true, leftValue: '', typeValidation: 'strict' }, conditions: [{ leftValue: expr('{{ $json.route }}'), operator: { type: 'string', operation: 'equals' }, rightValue: 'skill' }], combinator: 'and' } },
+          { outputKey: 'book', conditions: { options: { caseSensitive: true, leftValue: '', typeValidation: 'strict' }, conditions: [{ leftValue: expr('{{ $json.route }}'), operator: { type: 'string', operation: 'equals' }, rightValue: 'book' }], combinator: 'and' } },
           { outputKey: 'search', conditions: { options: { caseSensitive: true, leftValue: '', typeValidation: 'strict' }, conditions: [{ leftValue: expr('{{ $json.route }}'), operator: { type: 'string', operation: 'equals' }, rightValue: 'search' }], combinator: 'and' } },
         ],
       },
@@ -88,6 +89,47 @@ const githubSearch = node({
       options: { response: { response: { fullResponse: true, neverError: true } }, timeout: 10000 },
     },
     output: [{ statusCode: 200, headers: {}, body: { items: [] } }],
+  },
+});
+
+const bookSearch = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.5,
+  config: {
+    name: 'Book Search',
+    onError: 'continueRegularOutput',
+    parameters: {
+      method: 'GET',
+      url: expr('https://openlibrary.org/search.json?title={{ encodeURIComponent($json.query) }}&limit=10&fields=key,title,author_name,first_publish_year,edition_count'),
+      sendHeaders: true,
+      headerParameters: { parameters: [{ name: 'User-Agent', value: 'AIBasket/1.0 (personal bookmark bot)' }] },
+      options: { response: { response: { fullResponse: true, neverError: true } }, timeout: 15000 },
+    },
+    output: [{ statusCode: 200, body: { docs: [] } }],
+  },
+});
+
+const bookResult = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Book Result',
+    parameters: { mode: 'runOnceForAllItems', jsCode: __INCLUDE__('lib/resources.js', 'adapters/fl-book-result.js') },
+    output: [{ url: 'https://openlibrary.org/works/OL1W', link_from: 'openlibrary', stars: null, about: 'Book.' }],
+  },
+});
+
+const isBookFound = ifElse({
+  version: 2.2,
+  config: {
+    name: 'Book Found?',
+    parameters: {
+      conditions: {
+        options: { caseSensitive: true, leftValue: '', typeValidation: 'loose' },
+        conditions: [{ leftValue: expr('{{ Boolean($json.url) }}'), operator: { type: 'boolean', operation: 'true', singleValue: true } }],
+        combinator: 'and',
+      },
+    },
   },
 });
 
@@ -350,7 +392,8 @@ export default workflow('ai-basket-find-link', 'AI Basket – Find Link')
     .onCase(0, checkInput)
     .onCase(1, promptResult)
     .onCase(2, skillsSearch.to(matchSkillNode.to(githubSearch.to(hasPack.onTrue(packRepo.to(chooseLinkNode)).onFalse(chooseLinkNode))))))
-    .onCase(3, toolRepos.to(tavily)))
+    .onCase(3, bookSearch.to(bookResult.to(isBookFound.onTrue(checkInput).onFalse(tavily))))
+    .onCase(4, toolRepos.to(tavily)))
   .add(chooseLinkNode)
   .to(isMatched.onTrue(checkInput).onFalse(tavily))
   .add(tavily)

@@ -310,3 +310,32 @@ test('pickCandidates: at most 5 web results and 3 repos; nothing when both are e
   assert.strictEqual(out[7].content, '');
   assert.deepStrictEqual(pickCandidates(undefined, undefined, 'x'), []);
 });
+
+const { bookQuery, bookLink } = require('../src/lib/resources');
+const openLibrary = require('./fixtures/probe/openlibrary.json').docs;
+
+test('bookQuery: title and the credited author from "Title (Author)"', () => {
+  assert.deepStrictEqual(bookQuery("The Founder's Dilemma (Noam Wasserman)"), { title: "The Founder's Dilemma", author: 'Noam Wasserman' });
+  assert.deepStrictEqual(bookQuery('Disciplined Entrepreneurship'), { title: 'Disciplined Entrepreneurship', author: '' });
+});
+
+test('bookLink: Open Library work page; title matches loosely (the / plural / punctuation); most editions wins', () => {
+  assert.deepStrictEqual(bookLink(openLibrary, "The Founder's Dilemma (Noam Wasserman)"), {
+    url: 'https://openlibrary.org/works/OL16152741W',
+    about: 'Book by Noam Wasserman, 2012.',
+  });
+});
+
+test('bookLink: a different title or author is no match', () => {
+  assert.strictEqual(bookLink(openLibrary, 'Dilemma'), null);
+  assert.strictEqual(bookLink(openLibrary, "The Founder's Dilemma (Bill Aulet)"), null);
+  assert.strictEqual(bookLink(undefined, 'x'), null);
+});
+
+test('parseResources: Book is a category', () => {
+  assert.strictEqual(parseResources('{"resources":[{"name":"A","category":"book"}]}').resources[0].category, 'Book');
+});
+
+test('readerOutcome: an empty answer keeps the video topic for the reply', () => {
+  assert.deepStrictEqual(readerOutcome(job({}), '{"resources":[],"topic":"3 startup books"}').hold, { temporary: false, empty: true, topic: '3 startup books' });
+});

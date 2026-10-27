@@ -203,3 +203,8 @@ test('saveRows: an empty description falls back to the link source text; the AI 
   assert.strictEqual(saveRows([{ ...skill, description: '' }], [link], [], job, NOW).rows[0].description, 'An agentic skills framework');
   assert.strictEqual(saveRows([skill], [link], [], job, NOW).rows[0].description, 'Workflows');
 });
+
+test('holdPlan: the topic of an empty Short reaches the notice', () => {
+  const job = { chat_id: '1', kind: 'youtube', source_url: SHORT_CANON, note: '', text: '', retry_row: null, replace_row: null };
+  assert.ok(holdPlan(job, { temporary: false, empty: true, topic: 'cooking' }, [], NOW).notice.endsWith('It is about: cooking'));
+});

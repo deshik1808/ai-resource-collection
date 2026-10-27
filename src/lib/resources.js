@@ -1,7 +1,7 @@
 // Reads AI answers safely: the resource list, and a chosen search-result index.
 // The AI is never trusted to write a URL that did not come from the source.
 
-const CATEGORIES = ['Skill', 'Tool', 'Prompt', 'Website'];
+const CATEGORIES = ['Skill', 'Tool', 'Prompt', 'Website', 'Book'];
 const DESCRIPTION_MAX = 200;
 
 function isHttpUrl(value) {
@@ -41,7 +41,8 @@ function parseResources(raw) {
       link_in_source: isHttpUrl(trimmed(item.link_in_source)) ? trimmed(item.link_in_source) : '',
       prompt_text: trimmed(item.prompt_text),
     }));
-  return { ok: true, resources };
+  const topic = trimmed(data.topic).slice(0, DESCRIPTION_MAX);
+  return topic ? { ok: true, resources, topic } : { ok: true, resources };
 }
 
 /** @param {string} raw @param {number} count @returns {number|null} */
@@ -148,6 +149,36 @@ function chooseLink(skillMatch, pack, items, name) {
   return best && { url: best.url, link_from: best.link_from, stars: best.stars, about: best.about };
 }
 
+/** @returns {{title: string, author: string}} from "Title (Author)" */
+function bookQuery(name) {
+  const author = /\(([^)]*)\)/.exec(String(name || ''));
+  return { title: searchName(name), author: author ? author[1].trim() : '' };
+}
+
+function titleKey(title) {
+  return String(title || '').toLowerCase().replace(/^the\s+/, '').split(':')[0].replace(/[^a-z0-9]/g, '').replace(/s$/, '');
+}
+
+/**
+ * Open Library work page for a book: same title (ignoring "the", punctuation,
+ * a plural and any subtitle) and, when credited, the same author surname.
+ * The edition with the most printings wins.
+ * @param {{key:string, title:string, author_name?:string[], edition_count?:number, first_publish_year?:number}[]} docs
+ * @returns {{url: string, about: string}|null}
+ */
+function bookLink(docs, name) {
+  const { title, author } = bookQuery(name);
+  const wanted = titleKey(title);
+  const surname = author.split(/\s+/).pop().toLowerCase();
+  const matches = (docs || []).filter((doc) => doc && doc.key && titleKey(doc.title) === wanted
+    && (!surname || (doc.author_name || []).some((a) => a.toLowerCase().includes(surname))));
+  if (!wanted || matches.length === 0) return null;
+  const best = matches.reduce((a, b) => ((b.edition_count || 0) > (a.edition_count || 0) ? b : a));
+  const by = (best.author_name || [])[0];
+  const about = `Book${by ? ` by ${by}` : ''}${best.first_publish_year ? `, ${best.first_publish_year}` : ''}.`;
+  return { url: `https://openlibrary.org${best.key}`, about };
+}
+
 /** Text of an AI answer: Gemini API or node output, or an OpenAI-style (NVIDIA NIM) response. */
 function aiText(json) {
   const parts = json?.content?.parts || json?.candidates?.[0]?.content?.parts;
@@ -190,7 +221,7 @@ function watchRequest(videoUrl, prompt) {
 function readerOutcome(job, raw, pageUrl) {
   const parsed = parseResources(raw);
   if (!parsed.ok) return { hold: { temporary: false, empty: false } };
-  if (parsed.resources.length === 0) return { hold: { temporary: false, empty: true } };
+  if (parsed.resources.length === 0) return { hold: { temporary: false, empty: true, ...(parsed.topic ? { topic: parsed.topic } : {}) } };
   if (job.kind === 'page') {
     return { resources: [{ ...parsed.resources[0], link_in_source: pageUrl || job.source_url }] };
   }
@@ -231,4 +262,4 @@ function pickRequest(model, prompt, resource, results) {
   return nimRequest(model, prompt, `${about}\n\nResults:\n${list}`);
 }
 
-module.exports = { parseResources, pickIndex, searchName, matchSkill, repoOf, repoStars, repoAbout, chooseLink, aiText, isTemporaryError, nimRequest, watchRequest, readerOutcome, linkAlive, pickCandidates, pickRequest };
+module.exports = { parseResources, pickIndex, searchName, bookQuery, bookLink, matchSkill, repoOf, repoStars, repoAbout, chooseLink, aiText, isTemporaryError, nimRequest, watchRequest, readerOutcome, linkAlive, pickCandidates, pickRequest };

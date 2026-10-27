@@ -128,14 +128,14 @@ function nextRetryState(row) {
  */
 function holdPlan(job, reason, rows, now) {
   const status = reason.temporary && job.kind === 'youtube' ? 'pending' : 'check';
-  const notice = holdNotice({ status, kind: job.kind, empty: reason.empty });
+  const notice = holdNotice({ status, kind: job.kind, empty: reason.empty, topic: reason.topic });
 
   if (job.retry_row != null) {
     const existing = rows.find((row) => Number(row.row_number) === Number(job.retry_row)) || {};
     const next = status === 'pending'
       ? nextRetryState(existing)
       : { status: 'check', attempts: (Number(existing.attempts) || 0) + 1 };
-    const quietNotice = next.status === 'pending' ? '' : holdNotice({ status: 'check', kind: job.kind, empty: reason.empty });
+    const quietNotice = next.status === 'pending' ? '' : holdNotice({ status: 'check', kind: job.kind, empty: reason.empty, topic: reason.topic });
     return { op: 'update', update: { row_number: Number(job.retry_row), ...next }, notice: quietNotice };
   }
   if (job.replace_row != null) return { op: 'none', notice };

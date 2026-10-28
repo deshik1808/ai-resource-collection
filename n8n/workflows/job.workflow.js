@@ -157,6 +157,20 @@ const parse = node({
   },
 });
 
+const isList = ifElse({
+  version: 2.2,
+  config: {
+    name: 'Is List?',
+    parameters: {
+      conditions: {
+        options: { caseSensitive: true, leftValue: '', typeValidation: 'loose' },
+        conditions: [{ leftValue: expr('{{ Boolean($json.list_answer) }}'), operator: { type: 'boolean', operation: 'true', singleValue: true } }],
+        combinator: 'and',
+      },
+    },
+  },
+});
+
 const isHold = ifElse({
   version: 2.2,
   config: {
@@ -295,7 +309,7 @@ export default workflow('ai-basket-job', 'AI Basket – Job')
   .to(routeKind
     .onCase(0, buildWatch.to(watch.to(parse)))
     .onCase(1, fetchPage.to(buildPageRead.to(readWithNim)))
-    .onCase(2, buildTextRead.to(readWithNim)))
+    .onCase(2, buildTextRead.to(isList.onTrue(parse).onFalse(readWithNim))))
   .add(readWithNim)
   .to(parse)
   .add(parse)

@@ -237,6 +237,20 @@ const buildPick = node({
   },
 });
 
+const isDirect = ifElse({
+  version: 2.2,
+  config: {
+    name: 'Direct?',
+    parameters: {
+      conditions: {
+        options: { caseSensitive: true, leftValue: '', typeValidation: 'loose' },
+        conditions: [{ leftValue: expr('{{ Boolean($json.direct) }}'), operator: { type: 'boolean', operation: 'true', singleValue: true } }],
+        combinator: 'and',
+      },
+    },
+  },
+});
+
 const hasResults = ifElse({
   version: 2.2,
   config: {
@@ -397,8 +411,8 @@ export default workflow('ai-basket-find-link', 'AI Basket – Find Link')
   .add(chooseLinkNode)
   .to(isMatched.onTrue(checkInput).onFalse(tavily))
   .add(tavily)
-  .to(buildPick.to(hasResults
+  .to(buildPick.to(isDirect.onTrue(checkInput).onFalse(hasResults
     .onTrue(pick.to(pickIndexNode.to(isPicked.onTrue(checkInput).onFalse(notFound))))
-    .onFalse(notFound)))
+    .onFalse(notFound))))
   .add(checkInput)
   .to(checkLink.to(linkResult.to(needsStars.onTrue(repoStarsNode.to(finalResult)).onFalse(finalResult))));

@@ -179,6 +179,39 @@ function bookLink(docs, name) {
   return { url: `https://openlibrary.org${best.key}`, about };
 }
 
+const LIST_LINE = /^\s*(?:\d{1,3}[.)]|[-•*])\s+(.{1,60}?)(?:\s*:\s+|\s+[—–-]\s+)(.+)$/;
+const MIN_LIST_LINES = 3;
+
+/**
+ * A pasted list such as "1. Claude — Solve any problem" read by code, not AI:
+ * one Tool per line, the note as its description. null when fewer than 3
+ * lines look like that, so prompts and short notes still go to the AI.
+ */
+function parseList(text) {
+  const items = String(text || '').split('\n')
+    .map((line) => LIST_LINE.exec(line.replace(/\*/g, '')))
+    .filter(Boolean)
+    .map((m) => ({ name: m[1].trim(), category: 'Tool', description: m[2].trim().slice(0, DESCRIPTION_MAX), link_in_source: '', prompt_text: '' }));
+  return items.length >= MIN_LIST_LINES ? items : null;
+}
+
+const HOST = /^https?:\/\/(?:www\.)?([^/?#:\s]+)/i;
+
+/** Index of the first result whose web address is the tool's own name (perplexity.ai, remove.bg), else null. */
+function officialMatch(results, name) {
+  const full = searchName(name).toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (!full) return null;
+  const bases = [...new Set([full, full.replace(/ai$/, '')])].filter(Boolean);
+  const labels = new Set(bases.flatMap((b) => [b, `${b}ai`, `${b}app`, `get${b}`, `try${b}`, `use${b}`]));
+  const index = (results || []).findIndex((r) => {
+    const m = HOST.exec(String(r && r.url || ''));
+    if (!m) return false;
+    const host = m[1].toLowerCase();
+    return labels.has(host.split('.')[0].replace(/-/g, '')) || host.replace(/[.-]/g, '') === full;
+  });
+  return index === -1 ? null : index;
+}
+
 /** Text of an AI answer: Gemini API or node output, or an OpenAI-style (NVIDIA NIM) response. */
 function aiText(json) {
   const parts = json?.content?.parts || json?.candidates?.[0]?.content?.parts;
@@ -253,6 +286,19 @@ function pickCandidates(webResults, repoItems, name) {
   return [...(webResults || []).slice(0, 5), ...repos];
 }
 
+/**
+ * The official site when a web result's address is the tool's own name, so
+ * the slow AI picker is skipped. Not when a same-named repo with 100+ stars
+ * exists: then the picker decides between the site and the open-source repo.
+ */
+function directLink(webResults, repoItems, name) {
+  const wanted = skillKey(name);
+  const popularRepo = (repoItems || []).some((item) => item && !item.fork && skillKey(item.name) === wanted && (item.stargazers_count || 0) >= 100);
+  if (popularRepo) return '';
+  const index = officialMatch(webResults, name);
+  return index === null ? '' : webResults[index].url;
+}
+
 /** NIM request asking which numbered search result is the resource's official page. */
 function pickRequest(model, prompt, resource, results) {
   const about = `${resource.name} (${resource.category})${resource.description ? `: ${resource.description}` : ''}`;
@@ -262,4 +308,4 @@ function pickRequest(model, prompt, resource, results) {
   return nimRequest(model, prompt, `${about}\n\nResults:\n${list}`);
 }
 
-module.exports = { parseResources, pickIndex, searchName, bookQuery, bookLink, matchSkill, repoOf, repoStars, repoAbout, chooseLink, aiText, isTemporaryError, nimRequest, watchRequest, readerOutcome, linkAlive, pickCandidates, pickRequest };
+module.exports = { parseResources, pickIndex, searchName, bookQuery, bookLink, parseList, officialMatch, matchSkill, repoOf, repoStars, repoAbout, chooseLink, aiText, isTemporaryError, nimRequest, watchRequest, readerOutcome, linkAlive, pickCandidates, directLink, pickRequest };

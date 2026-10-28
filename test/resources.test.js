@@ -339,3 +339,55 @@ test('parseResources: Book is a category', () => {
 test('readerOutcome: an empty answer keeps the video topic for the reply', () => {
   assert.deepStrictEqual(readerOutcome(job({}), '{"resources":[],"topic":"3 startup books"}').hold, { temporary: false, empty: true, topic: '3 startup books' });
 });
+
+const { parseList, officialMatch } = require('../src/lib/resources');
+
+const LIST = `*50 AI tools that will save you hundreds of hours in 2026.*
+
+1. Claude — Solve any problem
+2. Perplexity — Research anything
+16. Bolt new - Generate full-stack apps
+40. Remove bg: Remove image backgrounds
+• Granola – AI meeting assistant
+
+✅ Save this list—you'll probably use it more than you think.
+💬 *Tap ❤️ for more!*`;
+
+test('parseList: numbered or bulleted "Name — note" lines become tools; header and footer are ignored', () => {
+  assert.deepStrictEqual(parseList(LIST), [
+    { name: 'Claude', category: 'Tool', description: 'Solve any problem', link_in_source: '', prompt_text: '' },
+    { name: 'Perplexity', category: 'Tool', description: 'Research anything', link_in_source: '', prompt_text: '' },
+    { name: 'Bolt new', category: 'Tool', description: 'Generate full-stack apps', link_in_source: '', prompt_text: '' },
+    { name: 'Remove bg', category: 'Tool', description: 'Remove image backgrounds', link_in_source: '', prompt_text: '' },
+    { name: 'Granola', category: 'Tool', description: 'AI meeting assistant', link_in_source: '', prompt_text: '' },
+  ]);
+});
+
+test('parseList: fewer than 3 list lines, or a prompt, is not a list (the AI reads it)', () => {
+  assert.strictEqual(parseList('Strix : tests your vibe coded app like a hacker'), null);
+  assert.strictEqual(parseList('1. Claude — Solve any problem\n2. Perplexity — Research'), null);
+  assert.strictEqual(parseList('Act as an editor.\n1. Read the text\n2. Fix grammar\n3. Keep my tone'), null);
+});
+
+test('officialMatch: a result whose address is the tool\'s own name', () => {
+  const r = (url) => ({ title: 't', url, content: '' });
+  assert.strictEqual(officialMatch([r('https://blog.example/perplexity'), r('https://www.perplexity.ai/')], 'Perplexity'), 1);
+  assert.strictEqual(officialMatch([r('https://remove.bg/')], 'Remove bg'), 0);
+  assert.strictEqual(officialMatch([r('https://bolt.new')], 'Bolt new'), 0);
+  assert.strictEqual(officialMatch([r('https://klingai.com/global')], 'Kling AI'), 0);
+  assert.strictEqual(officialMatch([r('https://www.notion.so/product/ai')], 'Notion AI'), 0);
+  assert.strictEqual(officialMatch([r('https://www.makeuseof.com/x')], 'Make'), null);
+  assert.strictEqual(officialMatch([r('https://make.com/en')], 'Make'), 0);
+  assert.strictEqual(officialMatch([r('https://github.com/x/claude')], 'Claude'), null);
+  assert.strictEqual(officialMatch(undefined, 'x'), null);
+});
+
+const { directLink } = require('../src/lib/resources');
+
+test('directLink: the official site skips the AI picker, unless a popular same-named repo needs judging', () => {
+  const web = [{ title: 'n', url: 'https://n8n.io/', content: '' }];
+  assert.strictEqual(directLink(web, [], 'n8n'), 'https://n8n.io/');
+  assert.strictEqual(directLink(web, [{ name: 'n8n', html_url: 'https://github.com/n8n-io/n8n', fork: false, stargazers_count: 150000 }], 'n8n'), '');
+  assert.strictEqual(directLink(web, [{ name: 'n8n', html_url: 'https://github.com/x/n8n', fork: false, stargazers_count: 3 }], 'n8n'), 'https://n8n.io/');
+  assert.strictEqual(directLink([{ title: 'b', url: 'https://blog.example/n8n', content: '' }], [], 'n8n'), '');
+});
